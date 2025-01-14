@@ -24,6 +24,10 @@ namespace dp::prog
             DP_CHECK(false) << "Undefined API::" << __PRETTY_FUNCTION__;
             return kSc;
         }
+        [[nodiscard]] virtual DpError Select(const std::string &flash_name) noexcept {
+            DP_CHECK(false) << "Undefined API::" << __PRETTY_FUNCTION__;
+            return kSc;
+        }
         [[nodiscard]] virtual DpError Polling(uint32_t timeout = CONFIG_DEFAULT_TIMEOUT) noexcept
         {
             DP_CHECK(false) << "Undefined API::" << __PRETTY_FUNCTION__;

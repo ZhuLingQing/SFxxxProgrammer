@@ -1,11 +1,12 @@
-#ifndef SFXXX_HPP
-#define SFXXX_HPP
+#ifndef DUMMY_PROGRAMMER_HPP
+#define DUMMY_PROGRAMMER_HPP
 
 #include "programmer.hpp"
 #include "flash_database.hpp"
 #include <cstdlib> // getenv
 
 using FlashDatabase = dp::sf::FlashDatabase;
+using FlashInfo = dp::sf::FlashInfo;
 
 namespace dp::prog
 {
@@ -28,7 +29,7 @@ namespace dp::prog
             {
                 DP_CHECK_EQ(kSc, PowerConfig(kPwrVcc, power));
                 PowerControl pwr(*this);
-                for (auto id : readid | std::views::reverse)
+                for (auto id : readid | std::views::reverse) // revserse find, need -std=c++20
                 {
                     if (id.first == 0 || id.second == 0) continue; // RDIDCommand == 0 or IDNumber == 0
                     auto jedec_id = TryReadId(id.first, id.second);
@@ -37,6 +38,12 @@ namespace dp::prog
                 }
             }
             DP_LOG(WARNING) << "No flash found";
+            return kSc;
+        }
+        DpError Select(const std::string &flash_name) noexcept override
+        {
+            auto flash_ = db_.getFlashInfo(flash_name);
+            DP_CHECK(flash_ == FlashInfo::null()) << "Flash not found: " << flash_name;
             return kSc;
         }
         DpError PowerOn() noexcept override

@@ -16,6 +16,7 @@ echo "Compile $CASE_NAME.cpp"
 start=$(date +%s%N)
 g++ -o $PROJ_DIR/build/$CASE_NAME -std=c++20 \
     $PROJ_DIR/umd/test/$CASE_NAME.cpp \
+    $PROJ_DIR/umd/src/flash_info.cpp \
     $PROJ_DIR/umd/src/flash_database.cpp \
     -I$PROJ_DIR/umd/src \
     -I$PROJ_DIR/umd/inc \

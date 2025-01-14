@@ -22,10 +22,7 @@ namespace dp::sf
 #define JsonKeyGetRaw(key, type) info.key = chip.at(#key).get<type>()
 #define JsonKeyGet(key, default_value, type) \
     info.key = (chip.find(#key) == chip.end()) ? default_value : Convert##type(chip.at(#key).get<std::string>());
-struct flash_info_t FlashInfo::info_null_ = {
-    .TypeName = "",
-};
-/* static */ FlashInfo flash_info_null_;
+
 
 void database_info_t::Dump() const
 {
@@ -37,49 +34,9 @@ void database_info_t::Dump() const
     DumpInfo(PortofolioDescription);
     DumpInfo(NewDb);
 }
-void flash_info_t::Dump() const
-{
-    DumpInfo(TypeName);
-    DumpInfo(ICType);
-    DumpInfo(Class);
-    DumpInfo(UniqueID);
-    DumpInfo(Description);
-    DumpInfo(Manufacturer);
-    DumpInfo(ManufactureUrl);
-    DumpInfo(ProgramIOMethod);
-    DumpInfo(MXIC_WPmode);
-
-    DumpInfo(Voltage);
-    DumpInfo(VppSupport);
-    DumpInfo(Clock);
-    DumpInfo(Timeout);
-    DumpInfo(ManufactureID);
-    DumpInfo(JedecDeviceID);
-    DumpInfo(AlternativeID);
-    DumpInfo(DeviceID);
-
-    DumpInfo(ChipSizeInKByte);
-    DumpInfo(SectorSizeInByte);
-    DumpInfo(PageSizeInByte);
-    DumpInfo(AddrWidth);
-    DumpInfo(ReadDummyLen);
-    DumpInfo(IDNumber);
-    DumpInfo(RDIDCommand);
-
-    DumpInfo(OperationDll);
-    DumpInfo(SupportedProduct);
-    DumpInfo(TopBootID);
-    DumpInfo(BottomBootID);
-    DumpInfo(AAIByte);
-}
-
-bool FlashInfo::CheckId(const uint8_t *id, int size)
-{
-    DP_LOG(WARNING) << __PRETTY_FUNCTION__ << "::not implemented";
-    return false;
-}
 
 FlashDatabase::FlashDatabase() { flash_info_map_.clear(); }
+
 FlashDatabase &FlashDatabase::getInstance(std::string filename)
 {
     static FlashDatabase instance;
@@ -89,20 +46,8 @@ FlashDatabase &FlashDatabase::getInstance(std::string filename)
 const FlashInfo &FlashDatabase::getFlashInfo(const std::string &name)
 {
     auto info = flash_info_map_.find(name);
-    if (info == flash_info_map_.end()) return flash_info_null_;
+    if (info == flash_info_map_.end()) return FlashInfo::null();
     return info->second;
-}
-std::vector<const FlashInfo *> FlashDatabase::getFlashList(const uint8_t *id, int size)
-{
-    std::vector<const FlashInfo *> flash_vct;
-    for (auto &info : flash_info_map_)
-    {
-        if (info.second.CheckId(id, size) == true)
-        {
-            flash_vct.push_back(&info.second);
-        }
-    }
-    return flash_vct;
 }
 DpError FlashDatabase::ReLoad(std::string &filename)
 {

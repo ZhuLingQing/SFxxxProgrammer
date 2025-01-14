@@ -1,7 +1,11 @@
-// g++ -o test -std=c++17 ./umd/test/test_database.cpp ./umd/src/flash_database.cpp \
-    -I./umd/src -I./umd/inc \
-    -I./third-party/plog/include \
-    -I./third-party/json/include 
+// g++ -o $PROJ_DIR/build/$CASE_NAME -std=c++20 \
+    $PROJ_DIR/umd/test/test_database.cpp \
+    $PROJ_DIR/umd/src/flash_info.cpp \
+    $PROJ_DIR/umd/src/flash_database.cpp \
+    -I$PROJ_DIR/umd/src \
+    -I$PROJ_DIR/umd/inc \
+    -I$PROJ_DIR/third-party/plog/include \
+    -I$PROJ_DIR/third-party/json/include
 
 #include <iostream>
 #include <cstdlib> // 包含getenv函数
