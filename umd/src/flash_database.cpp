@@ -14,9 +14,14 @@ using json = nlohmann::json;
 namespace dp::sf
 {
 #define DumpInfo(name) DP_LOG(INFO) << #name << ": " << name
-#define JsonKeySet(key) j["Portofolio"]["Chip"][std::string_view(type_name_)][#key] = flash_info.key
-#define JsonKeyGet(key, default_value, algo) \
-    info.key = (chip.find(#key) == chip.end()) ? default_value : Convert##algo(chip.at(#key).get<std::string>());
+#if !defined(CONFIG_DATABASE_SAVE_AS_DICT)
+#define JsonKeySet(key) j_chip_info[#key] = flash_info.key
+#else
+#define JsonKeySet(key) database["Portofolio"]["Chip"][std::string_view(type_name_)][#key] = flash_info.key
+#endif
+#define JsonKeyGetRaw(key, type) info.key = chip.at(#key).get<type>()
+#define JsonKeyGet(key, default_value, type) \
+    info.key = (chip.find(#key) == chip.end()) ? default_value : Convert##type(chip.at(#key).get<std::string>());
 struct flash_info_t FlashInfo::info_null_ = {
     .TypeName = "",
 };
@@ -30,6 +35,7 @@ void database_info_t::Dump() const
     DumpInfo(CreateDate);
     DumpInfo(Locale);
     DumpInfo(PortofolioDescription);
+    DumpInfo(NewDb);
 }
 void flash_info_t::Dump() const
 {
@@ -112,6 +118,7 @@ DpError FlashDatabase::ReLoad(std::string &filename)
     database_info_.CreateDate = database.at("CreateDate").get<std::string>();
     database_info_.Locale = database.at("Locale").get<std::string>();
     database_info_.PortofolioDescription = database["Portofolio"].at("Description").get<std::string>();
+    database_info_.NewDb = (database.find("NewDb") == database.end()) ? false : database.at("NewDb").get<bool>();
     database_info_.Dump();
 
     auto chip_list = database["Portofolio"].at("Chip");
@@ -126,67 +133,132 @@ DpError FlashDatabase::ReLoad(std::string &filename)
             DP_LOG(WARNING) << "Duplicate chip: " << chip.at("TypeName").get<std::string>();
             continue;
         }
+        if (database_info_.NewDb)
+        {
+            JsonKeyGetRaw(TypeName, std::string);
+            JsonKeyGetRaw(ICType, std::string);
+            JsonKeyGetRaw(Class, std::string);
+            JsonKeyGetRaw(UniqueID, std::string);
+            JsonKeyGetRaw(Description, std::string);
+            JsonKeyGetRaw(Manufacturer, std::string);
+            JsonKeyGetRaw(ManufactureUrl, std::string);
+            JsonKeyGetRaw(ProgramIOMethod, std::string);
+            JsonKeyGetRaw(MXIC_WPmode, bool);
 
-        JsonKeyGet(TypeName, "", String);
-        JsonKeyGet(ICType, "", String);
-        JsonKeyGet(Class, "", String);
-        JsonKeyGet(UniqueID, "", String);
-        JsonKeyGet(Description, "", String);
-        JsonKeyGet(Manufacturer, "", String);
-        JsonKeyGet(ManufactureUrl, "", String);
-        JsonKeyGet(ProgramIOMethod, "SPSD_R", String);
-        JsonKeyGet(MXIC_WPmode, false, Boolean);
+            JsonKeyGetRaw(Voltage, uint32_t);
+            JsonKeyGetRaw(VppSupport, uint32_t);
+            JsonKeyGetRaw(Clock, uint32_t);
+            JsonKeyGetRaw(Timeout, uint32_t);
+            JsonKeyGetRaw(ManufactureID, uint32_t);
+            JsonKeyGetRaw(JedecDeviceID, uint32_t);
+            JsonKeyGetRaw(AlternativeID, uint32_t);
+            JsonKeyGetRaw(DeviceID, uint32_t);
 
-        JsonKeyGet(Voltage, 1800, Voltage);
-        JsonKeyGet(VppSupport, 0, Voltage);
-        JsonKeyGet(Clock, 10, Frequency);
-        JsonKeyGet(Timeout, 1000, Uint32);
-        JsonKeyGet(ManufactureID, 0, Uint32);
-        JsonKeyGet(JedecDeviceID, 0, Uint32);
-        JsonKeyGet(AlternativeID, 0, Uint32);
-        JsonKeyGet(DeviceID, 0, Uint32);
+            JsonKeyGetRaw(ChipSizeInKByte, uint32_t);
+            JsonKeyGetRaw(SectorSizeInByte, uint32_t);
+            JsonKeyGetRaw(PageSizeInByte, uint32_t);
+            JsonKeyGetRaw(AddrWidth, uint32_t);
+            JsonKeyGetRaw(ReadDummyLen, uint32_t);
+            JsonKeyGetRaw(IDNumber, uint32_t);
+            JsonKeyGetRaw(RDIDCommand, uint32_t);
 
-        JsonKeyGet(ChipSizeInKByte, 0, Uint32);
-        if (chip.find("SectorSizeInByte") != chip.end())
-            info.SectorSizeInByte = ConvertUint32(chip.at("SectorSizeInByte").get<std::string>());
-        else if (chip.find("BlockSizeInByte") != chip.end())
-            info.SectorSizeInByte = ConvertUint32(chip.at("BlockSizeInByte").get<std::string>());
+            // extra info
+            JsonKeyGetRaw(OperationDll, std::string);
+            JsonKeyGetRaw(SupportedProduct, uint32_t);
+            JsonKeyGetRaw(TopBootID, uint32_t);
+            JsonKeyGetRaw(BottomBootID, uint32_t);
+            JsonKeyGetRaw(AAIByte, uint32_t);
+        }
         else
-            DP_LOG(WARNING) << info.TypeName << ": @SectorSizeInByte or @BlockSizeInByte not found";
-        JsonKeyGet(PageSizeInByte, 0, Uint32);
-        JsonKeyGet(AddrWidth, 0, Uint32);
-        JsonKeyGet(ReadDummyLen, 0, Uint32);
-        JsonKeyGet(IDNumber, 0, Uint32);
-        JsonKeyGet(RDIDCommand, 0, Uint32);
+        {
+            JsonKeyGet(TypeName, "", String);
+            JsonKeyGet(ICType, "", String);
+            JsonKeyGet(Class, "", String);
+            JsonKeyGet(UniqueID, "", String);
+            JsonKeyGet(Description, "", String);
+            JsonKeyGet(Manufacturer, "", String);
+            JsonKeyGet(ManufactureUrl, "", String);
+            JsonKeyGet(ProgramIOMethod, "SPSD_R", String);
+            JsonKeyGet(MXIC_WPmode, false, Boolean);
 
-        // extra info
-        JsonKeyGet(OperationDll, "", String);
-        JsonKeyGet(SupportedProduct, 0, Uint32);
-        JsonKeyGet(TopBootID, 0, Uint32);
-        JsonKeyGet(BottomBootID, 0, Uint32);
-        JsonKeyGet(AAIByte, 0, Uint32);
+            JsonKeyGet(Voltage, 1800, Voltage);
+            JsonKeyGet(VppSupport, 0, Voltage);
+            JsonKeyGet(Clock, 10, Frequency);
+            JsonKeyGet(Timeout, 1000, Uint32);
+            JsonKeyGet(ManufactureID, 0, Uint32);
+            JsonKeyGet(JedecDeviceID, 0, Uint32);
+            JsonKeyGet(AlternativeID, 0, Uint32);
+            JsonKeyGet(DeviceID, 0, Uint32);
 
+            JsonKeyGet(ChipSizeInKByte, 0, Uint32);
+            if (chip.find("SectorSizeInByte") != chip.end())
+                info.SectorSizeInByte = ConvertUint32(chip.at("SectorSizeInByte").get<std::string>());
+            else if (chip.find("BlockSizeInByte") != chip.end())
+                info.SectorSizeInByte = ConvertUint32(chip.at("BlockSizeInByte").get<std::string>());
+            else
+                DP_LOG(WARNING) << info.TypeName << ": @SectorSizeInByte or @BlockSizeInByte not found";
+            JsonKeyGet(PageSizeInByte, 0, Uint32);
+            JsonKeyGet(AddrWidth, 0, Uint32);
+            JsonKeyGet(ReadDummyLen, 0, Uint32);
+            JsonKeyGet(IDNumber, 0, Uint32);
+            JsonKeyGet(RDIDCommand, 0, Uint32);
+
+            // extra info
+            JsonKeyGet(OperationDll, "", String);
+            JsonKeyGet(SupportedProduct, 0, Uint32);
+            JsonKeyGet(TopBootID, 0, Uint32);
+            JsonKeyGet(BottomBootID, 0, Uint32);
+            JsonKeyGet(AAIByte, 0, Uint32);
+        }
         flash_info_map_.insert(std::make_pair(info.TypeName, FlashInfo(std::move(info))));
     }
     DP_LOG(INFO) << "ChipList in db: " << flash_info_map_.size();
     return kSc;
 }
+
+DpError FlashDatabase::getFlashNameList(const std::pair<uint32_t, uint32_t> &readid, uint32_t power, uint32_t id,
+                                        std::set<std::string> &flash_name_list)
+{
+    if (!isLoaded()) return kDevInvalidConfig;
+    for (auto &info : flash_info_map_)
+    {
+        auto flash_info = info.second.getFlashInfo();
+        if (flash_info.RDIDCommand == readid.first && flash_info.IDNumber == readid.second)
+        {
+            if (flash_info.Voltage >= power)
+            {
+                if (flash_info.JedecDeviceID == id)
+                {
+                    flash_name_list.insert(flash_info.TypeName);
+                }
+            }
+        }
+    }
+    return kSc;
+}
+
 int FlashDatabase::Save(const std::string &filename)
 {
     if (0 == flash_info_map_.size()) return -1;
     DP_LOG(INFO) << __PRETTY_FUNCTION__;
-    json j;
-    j["Description"] = database_info_.Description;
-    j["Creator"] = database_info_.Creator;
-    j["Ver"] = database_info_.Ver;
-    j["CreateDate"] = database_info_.CreateDate;
-    j["Locale"] = database_info_.Locale;
-    j["Portofolio"]["Description"] = database_info_.PortofolioDescription;
+    json write_data;
+    json &database = write_data["DediProgChipDatabase"];
+
+    database["Description"] = database_info_.Description;
+    database["Creator"] = database_info_.Creator;
+    database["Ver"] = database_info_.Ver;
+    database["CreateDate"] = database_info_.CreateDate;
+    database["Locale"] = database_info_.Locale;
+    database["Portofolio"]["Description"] = database_info_.PortofolioDescription;
 
     for (auto &info : flash_info_map_)
     {
         auto flash_info = info.second.getFlashInfo();
+
         std::string type_name_ = flash_info.TypeName;
+#if !defined(CONFIG_DATABASE_SAVE_AS_DICT)
+        json j_chip_info;
+#endif
         JsonKeySet(TypeName);
         JsonKeySet(ICType);
         JsonKeySet(Class);
@@ -219,10 +291,14 @@ int FlashDatabase::Save(const std::string &filename)
         JsonKeySet(TopBootID);
         JsonKeySet(BottomBootID);
         JsonKeySet(AAIByte);
+#if !defined(CONFIG_DATABASE_SAVE_AS_DICT)
+        database["Portofolio"]["Chip"].push_back(j_chip_info);
+#endif
     }
-    DP_LOG(INFO) << __PRETTY_FUNCTION__ << ":" << j["Portofolio"]["Chip"].size() << " chips";
+    database["NewDb"] = true;
+    DP_LOG(INFO) << __PRETTY_FUNCTION__ << ":" << database["Portofolio"]["Chip"].size() << " chips";
     std::ofstream o(filename);
-    o << j.dump(4);  // 使用4个空格缩进
+    o << write_data.dump(4);  // 使用4个空格缩进
     return 0;
 }
 std::set<std::pair<uint32_t, uint32_t>> FlashDatabase::getReadIdInfoList()

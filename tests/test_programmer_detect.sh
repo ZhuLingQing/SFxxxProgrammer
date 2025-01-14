@@ -2,7 +2,7 @@
 CUR_DIR=$(cd $(dirname $0); pwd)
 ARCHIVES=$CUR_DIR/../archives
 PROJ_DIR=$CUR_DIR/..
-CASE_NAME=test_database
+CASE_NAME=test_programmer_detect
 NEED_BUILD=0
 
 if [ ! -f $PROJ_DIR/build/$CASE_NAME ]; then
@@ -29,8 +29,8 @@ end=$(date +%s%N)
 echo "Execution time: $(( (end - start) / 1000000 )) milliseconds"
 fi
 
-echo "execute: $PROJ_DIR/build/$CASE_NAME $ARCHIVES/ChipInfoDb.json $ARCHIVES/ChipInfoDb.json"
+echo "execute $CASE_NAME.cpp"
 start=$(date +%s%N)
-$PROJ_DIR/build/$CASE_NAME $ARCHIVES/ChipInfoDb.json  $ARCHIVES/ChipInfoDb_opt.json
+$PROJ_DIR/build/$CASE_NAME $ARCHIVES/ChipInfoDb_opt.json
 end=$(date +%s%N)
 echo "Execution time: $(( (end - start) / 1000000 )) milliseconds"

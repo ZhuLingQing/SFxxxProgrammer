@@ -38,26 +38,27 @@ enum DevAttri
     kDevAttriEnd,
 };
 
-typedef enum
+enum DevPowerChan
 {
     kPwrVcc = 0,
     kPwrVpp = 1,
-} DevPowerChan;
+    kPowerChanMax,
+};
 
-typedef enum
+enum DevResetType
 {
     kDevResetNone = 0,
     kDevColdReset = 0x00000001,
     kDevWarmReset = 0x00000002,
 } DevResetType;
 
-enum class DevType
+enum DevType
 {
     kDevUnknown = 0,
     kDevSFxxx = 1,
     kDevGangProgrammer = 2,
 };
-};
+}
 #else
 typedef enum
 {

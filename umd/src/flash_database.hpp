@@ -86,6 +86,8 @@ struct database_info_t
     std::string CreateDate;
     std::string Locale;
     std::string PortofolioDescription;
+    bool NewDb;
+
     void Dump() const;
 };
 
@@ -119,9 +121,12 @@ class FlashDatabase
     size_t getCount() const { return flash_info_map_.size(); }
     const FlashInfo &getFlashInfo(const std::string &name);
     std::vector<const FlashInfo *> getFlashList(const uint8_t *id, int size);
-    int Save(const std::string &filename);
     std::set<std::pair<uint32_t, uint32_t>> getReadIdInfoList();
     std::set<uint32_t> getPowerVddList();
+    DpError getFlashNameList(const std::pair<uint32_t, uint32_t> &readid, uint32_t power, uint32_t id,
+                             std::set<std::string> &flash_name_list);
+
+    int Save(const std::string &filename);
 
    private:
     FlashDatabase();  // singleton
