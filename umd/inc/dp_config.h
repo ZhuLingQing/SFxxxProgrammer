@@ -1,7 +1,7 @@
 #ifndef _DP_CONFIG_H_
 #define _DP_CONFIG_H_
 
-#define CONFIG_MAX_DEVICE_NUM   16
+#define CONFIG_MAX_DEVICE_NUM 16
 #define CONFIG_USB_VENDOR_ID 0x0483
 #define CONFIG_USB_PROD_ID 0xdada
 
@@ -10,4 +10,4 @@
 
 #define CONFIG_MAX_DIE_COUNT 16
 
-#endif // #ifndef _DP_CONFIG_H_
+#endif  // #ifndef _DP_CONFIG_H_

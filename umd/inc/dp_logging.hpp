@@ -29,18 +29,18 @@
         plog::get<DP_LOG_INST_ID>()->addAppender(&consoleAppender);            \
     } while (0)
 
-#define DP_LOG_INIT_CONSOLE_ONLY(sev)            \
+#define DP_LOG_INIT_CONSOLE_ONLY(sev)                                          \
     do                                                                         \
     {                                                                          \
-        plog::init<DP_LOG_INST_ID>((sev)); \
+        plog::init<DP_LOG_INST_ID>((sev));                                     \
         static plog::ColorConsoleAppender<plog::TxtFormatter> consoleAppender; \
         plog::get<DP_LOG_INST_ID>()->addAppender(&consoleAppender);            \
     } while (0)
 
-#define FATAL   (plog::fatal)
-#define ERROR   (plog::error)
+#define FATAL (plog::fatal)
+#define ERROR (plog::error)
 #define WARNING (plog::warning)
-#define INFO    (plog::info)
+#define INFO (plog::info)
 
 #define DP_LOG(severity) PLOG_(DP_LOG_INST_ID, severity)
 #ifndef NDEBUG
@@ -63,7 +63,7 @@
 #define _DP_DCHECK(condition) _DP_CHECK(condition)
 #endif  // NDEBUG
 
-#define DP_CHECK(condition)  _DP_CHECK(condition)
+#define DP_CHECK(condition) _DP_CHECK(condition)
 #define DP_DCHECK(condition) _DP_DCHECK(condition)
 // ------------------------- CHECK_OP macros ---------------------------------
 namespace op_detail
@@ -157,7 +157,7 @@ T& __CheckNotNullPtr(const char* file, int line, const char* msg, T& t)
 #define _DP_DCHECK_NOTNULL(ptr)
 #endif  // NDEBUG
 
-#define DP_CHECK_NOTNULL(ptr)  _DP_CHECK_NOTNULL(ptr)
+#define DP_CHECK_NOTNULL(ptr) _DP_CHECK_NOTNULL(ptr)
 #define DP_DCHECK_NOTNULL(ptr) _DP_DCHECK_NOTNULL(ptr)
 
 #endif

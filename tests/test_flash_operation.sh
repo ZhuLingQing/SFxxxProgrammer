@@ -2,7 +2,7 @@
 CUR_DIR=$(cd $(dirname $0); pwd)
 ARCHIVES=$CUR_DIR/../archives
 PROJ_DIR=$CUR_DIR/..
-CASE_NAME=test_programmer_detect
+CASE_NAME=test_flash_operation
 NEED_BUILD=0
 
 if [ ! -f $PROJ_DIR/build/$CASE_NAME ]; then

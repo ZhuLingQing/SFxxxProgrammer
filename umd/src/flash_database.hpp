@@ -13,7 +13,7 @@
 #include "dp_error.h"
 #include "flash_info.hpp"
 
-namespace dp::sf
+namespace dp
 {
 struct database_info_t
 {
@@ -31,11 +31,11 @@ struct database_info_t
 class FlashDatabase
 {
    public:
-    static FlashDatabase &getInstance(std::string filename = "");
-    DpError ReLoad(std::string &filename);
+    static FlashDatabase &getInstance(const std::string filename = "");
+    DpError ReLoad(const std::string &filename);
     bool isLoaded() const { return flash_info_map_.size() ? true : false; }
     size_t getCount() const { return flash_info_map_.size(); }
-    const FlashInfo &getFlashInfo(const std::string &name);
+    const FlashInfo *getFlashInfo(const std::string &name);
     std::set<std::pair<uint32_t, uint32_t>> getReadIdInfoList();
     std::set<uint32_t> getPowerVddList();
     DpError getFlashNameList(const std::pair<uint32_t, uint32_t> &readid, uint32_t power, uint32_t id,
@@ -50,9 +50,11 @@ class FlashDatabase
     static uint32_t ConvertFrequency(const std::string &str);
     static uint32_t ConvertUint32(const std::string &str);
     static bool ConvertBoolean(const std::string &str);
+    static void MakeDieInfo(struct flash_info_t &flash_info);
+
     std::unordered_map<std::string, FlashInfo> flash_info_map_;
     struct database_info_t database_info_;
 };
-}  // namespace dp::sf
+}  // namespace dp
 
 #endif  // FLASH_DATABASE_HPP

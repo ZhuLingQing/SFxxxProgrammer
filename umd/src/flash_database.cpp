@@ -11,18 +11,17 @@
 #include "nlohmann/json.hpp"
 using json = nlohmann::json;
 
-namespace dp::sf
+namespace dp
 {
 #define DumpInfo(name) DP_LOG(INFO) << #name << ": " << name
 #if !defined(CONFIG_DATABASE_SAVE_AS_DICT)
-#define JsonKeySet(key) j_chip_info[#key] = flash_info.key
+#define JsonKeySet(key) j_chip_info[#key] = info.key
 #else
-#define JsonKeySet(key) database["Portofolio"]["Chip"][std::string_view(type_name_)][#key] = flash_info.key
+#define JsonKeySet(key) database["Portofolio"]["Chip"][std::string_view(type_name_)][#key] = info.key
 #endif
 #define JsonKeyGetRaw(key, type) info.key = chip.at(#key).get<type>()
 #define JsonKeyGet(key, default_value, type) \
     info.key = (chip.find(#key) == chip.end()) ? default_value : Convert##type(chip.at(#key).get<std::string>());
-
 
 void database_info_t::Dump() const
 {
@@ -37,19 +36,19 @@ void database_info_t::Dump() const
 
 FlashDatabase::FlashDatabase() { flash_info_map_.clear(); }
 
-FlashDatabase &FlashDatabase::getInstance(std::string filename)
+FlashDatabase &FlashDatabase::getInstance(const std::string filename)
 {
     static FlashDatabase instance;
     if (!instance.isLoaded()) instance.ReLoad(filename);
     return instance;
 }
-const FlashInfo &FlashDatabase::getFlashInfo(const std::string &name)
+const FlashInfo *FlashDatabase::getFlashInfo(const std::string &name)
 {
     auto info = flash_info_map_.find(name);
-    if (info == flash_info_map_.end()) return FlashInfo::null();
-    return info->second;
+    if (info == flash_info_map_.end()) return nullptr;
+    return &info->second;
 }
-DpError FlashDatabase::ReLoad(std::string &filename)
+DpError FlashDatabase::ReLoad(const std::string &filename)
 {
     DP_LOG(INFO) << __PRETTY_FUNCTION__;
     flash_info_map_.clear();
@@ -155,6 +154,7 @@ DpError FlashDatabase::ReLoad(std::string &filename)
             JsonKeyGet(BottomBootID, 0, Uint32);
             JsonKeyGet(AAIByte, 0, Uint32);
         }
+        MakeDieInfo(info);
         flash_info_map_.insert(std::make_pair(info.TypeName, FlashInfo(std::move(info))));
     }
     DP_LOG(INFO) << "ChipList in db: " << flash_info_map_.size();
@@ -165,16 +165,16 @@ DpError FlashDatabase::getFlashNameList(const std::pair<uint32_t, uint32_t> &rea
                                         std::set<std::string> &flash_name_list)
 {
     if (!isLoaded()) return kDevInvalidConfig;
-    for (auto &info : flash_info_map_)
+    for (auto &flash_info : flash_info_map_)
     {
-        auto flash_info = info.second.getFlashInfo();
-        if (flash_info.RDIDCommand == readid.first && flash_info.IDNumber == readid.second)
+        auto info = flash_info.second.getInfo();
+        if (info.RDIDCommand == readid.first && info.IDNumber == readid.second)
         {
-            if (flash_info.Voltage >= power)
+            if (info.Voltage >= power)
             {
-                if (flash_info.JedecDeviceID == id)
+                if (info.JedecDeviceID == id)
                 {
-                    flash_name_list.insert(flash_info.TypeName);
+                    flash_name_list.insert(info.TypeName);
                 }
             }
         }
@@ -196,11 +196,11 @@ int FlashDatabase::Save(const std::string &filename)
     database["Locale"] = database_info_.Locale;
     database["Portofolio"]["Description"] = database_info_.PortofolioDescription;
 
-    for (auto &info : flash_info_map_)
+    for (auto &flash_info : flash_info_map_)
     {
-        auto flash_info = info.second.getFlashInfo();
+        auto info = flash_info.second.getInfo();
 
-        std::string type_name_ = flash_info.TypeName;
+        std::string type_name_ = info.TypeName;
 #if !defined(CONFIG_DATABASE_SAVE_AS_DICT)
         json j_chip_info;
 #endif
@@ -249,20 +249,20 @@ int FlashDatabase::Save(const std::string &filename)
 std::set<std::pair<uint32_t, uint32_t>> FlashDatabase::getReadIdInfoList()
 {
     std::set<std::pair<uint32_t, uint32_t>> read_id;
-    for (auto &info : flash_info_map_)
+    for (auto &flash_info : flash_info_map_)
     {
-        auto flash_info = info.second.getFlashInfo();
-        read_id.insert({flash_info.RDIDCommand, flash_info.IDNumber});
+        auto info = flash_info.second.getInfo();
+        read_id.insert({info.RDIDCommand, info.IDNumber});
     }
     return read_id;
 }
 std::set<uint32_t> FlashDatabase::getPowerVddList()
 {
     std::set<uint32_t> power_vdd;
-    for (auto &info : flash_info_map_)
+    for (auto &flash_info : flash_info_map_)
     {
-        auto flash_info = info.second.getFlashInfo();
-        power_vdd.insert(flash_info.Voltage);
+        auto info = flash_info.second.getInfo();
+        power_vdd.insert(info.Voltage);
     }
     return power_vdd;
 }
@@ -297,13 +297,10 @@ std::set<uint32_t> FlashDatabase::getPowerVddList()
     std::string unitStr = str.substr(str.find_first_not_of("0123456789/"));
     if (strcasecmp(unitStr.c_str(), "MHz") == 0)
     {
-        return static_cast<int>(std::stod(valueStr) * 1000);
-    }
-    {
         return static_cast<int>(std::stod(valueStr));
     }
     DP_LOG(FATAL) << __PRETTY_FUNCTION__ << ": " << str << ": unknown unit: " << unitStr;
-    return 0;
+    return static_cast<int>(std::stod(valueStr));
 }
 /* static */ uint32_t FlashDatabase::ConvertUint32(const std::string &str)
 {
@@ -329,4 +326,33 @@ std::set<uint32_t> FlashDatabase::getPowerVddList()
     DP_LOG(FATAL) << __PRETTY_FUNCTION__ << ": " << str << ": invalid boolean: " << str;
     return false;
 }
-}  // namespace dp::sf
+/* static */ void FlashDatabase::MakeDieInfo(struct flash_info_t &info)
+{
+    // info.die_count = 1;
+    // for (int i = 0; i < info.die_count; i++)
+    // {
+    //     struct die_info_t &die = info.die_info[i];
+    //     die.die_id = i;
+    //     die.die_size = info.ChipSizeInKByte * 1024;
+    //     die.sector_size = info.SectorSizeInByte;
+    //     die.page_size = info.PageSizeInByte;
+
+    //     die.sector_erase_addr_len = info.AddrWidth;
+    //     die.page_program_addr_len = info.AddrWidth;
+    //     die.page_read_addr_len = info.AddrWidth;
+    //     die.random_program_addr_len = info.AddrWidth;
+    //     die.random_read_addr_len = info.AddrWidth;
+
+    //     die.read_id_cmd = info.RDIDCommand;
+    //     die.read_uid_cmd = info.;
+    //     die.erase_cmd;
+    //     die.sector_erase_cmd;
+    //     die.page_program_cmd;
+    //     die.page_read_cmd;
+    //     die.random_program_cmd;
+    //     die.random_read_cmd;
+    //     die.read_status_cmd;
+    //     die.ready_bit_cmd;
+    // }
+}
+}  // namespace dp

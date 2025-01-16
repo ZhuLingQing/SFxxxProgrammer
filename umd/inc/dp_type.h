@@ -50,7 +50,7 @@ enum DevResetType
     kDevResetNone = 0,
     kDevColdReset = 0x00000001,
     kDevWarmReset = 0x00000002,
-} DevResetType;
+};
 
 enum DevType
 {
@@ -58,7 +58,7 @@ enum DevType
     kDevSFxxx = 1,
     kDevGangProgrammer = 2,
 };
-}
+}  // namespace dp
 #else
 typedef enum
 {
@@ -67,5 +67,13 @@ typedef enum
     kDevGangProgrammer = 2,
 } DevType;
 #endif
+
+enum cs_pin_state_e
+{
+    kCsHigh,
+    kCsKeepLow,
+};
+
+#define FLASH_ID_MASK(len) (((~0U) >> (32 - (len)*8)))
 
 #endif

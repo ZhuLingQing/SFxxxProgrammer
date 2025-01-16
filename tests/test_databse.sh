@@ -13,6 +13,7 @@ fi
 
 if [ $NEED_BUILD -eq 1 ]; then
 echo "Compile $CASE_NAME.cpp"
+rm -rf $PROJ_DIR/build/$CASE_NAME
 start=$(date +%s%N)
 g++ -o $PROJ_DIR/build/$CASE_NAME -std=c++20 \
     $PROJ_DIR/umd/test/$CASE_NAME.cpp \

@@ -70,6 +70,8 @@ typedef enum
     kIsNotEnable = -30,
     // the object is exist
     kExist = -31,
+    // Feature not implemented
+    kNotImplemented = -32,
 } DpError;
 
 #endif
