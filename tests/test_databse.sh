@@ -7,7 +7,7 @@ NEED_BUILD=0
 
 if [ ! -f $PROJ_DIR/build/$CASE_NAME ]; then
     NEED_BUILD=1
-elif [ $# -gt 0 ] && [ "$1" == "rebuild" ]; then
+elif [ $# -gt 0 ] && [ "$1" == "--rebuild" ]; then
     NEED_BUILD=1
 fi
 

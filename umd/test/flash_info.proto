@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package flash;
+
+enum PacketType {
+    kCtrlOut = 0;
+    kCtrlIn = 1;
+    kBulkOut = 2;
+    kBulkIn = 3;
+    kAttrPowerOn = 4;
+    kAttrPowerOff = 5;
+    kAttrPowerConfig = 6;
+    kAttrGetPowerConfig = 7;
+    kAttrShutDown = 8;
+}
+
+message FlashCmdPkt {
+    PacketType type = 1;
+    uint64 attribute = 2;
+    bool cs = 3;
+    bytes data = 4;
+}

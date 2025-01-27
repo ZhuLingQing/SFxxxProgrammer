@@ -5,6 +5,13 @@
 
 namespace dp
 {
+Programmer::Programmer(const std::string &db_file) : db_(FlashDatabase::getInstance(db_file)), flash_info_(nullptr)
+{
+    flash_interface_.reset();
+    prog_interface_.reset();
+    DP_CHECK(db_.isLoaded()) << "invalid flash database file: " << db_file;
+    DP_LOG(INFO) << "Flash database has " << db_.getCount() << " flash(es)";
+}
 const FlashInfo *Programmer::Select(const std::string &flash_name) noexcept
 {
     auto info = db_.getFlashInfo(flash_name);

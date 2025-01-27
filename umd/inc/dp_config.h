@@ -10,4 +10,7 @@
 
 #define CONFIG_MAX_DIE_COUNT 16
 
+#define CONFIG_PROTO_BUFFER_SIZE 1024
+#define CONFIG_BULK_BUFFER_SIZE 512
+
 #endif  // #ifndef _DP_CONFIG_H_

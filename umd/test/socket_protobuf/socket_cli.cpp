@@ -4,8 +4,12 @@
 #include <iostream>
 #include "message.pb.h"
 
+#include "dp_logging.hpp"
+
 int main()
 {
+    DP_LOG_INIT_CONSOLE_ONLY(static_cast<plog::Severity>(plog::info));
+    DP_LOG(WARNING) << "CLIENT LAUNCH";
     // 创建套接字
     int clientSocket = socket(AF_INET, SOCK_STREAM, 0);
     if (clientSocket == -1)

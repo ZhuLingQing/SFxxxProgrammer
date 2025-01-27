@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package proto_hal;
+
+enum PacketType {
+    kCtrlOut = 0;
+    kCtrlIn = 1;
+    kBulkOut = 2;
+    kBulkIn = 3;
+    kShutdown = 4;
+}
+
+message HalSktCtrlPacket {
+    PacketType type = 1;
+    uint64 ctrl_word = 2;
+    bytes payload = 3;
+}
+
+message HalSktDataPacket {
+    bytes data = 1;
+}

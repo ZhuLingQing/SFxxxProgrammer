@@ -25,17 +25,12 @@ class Programmer
     friend class FlashInterface;
 
    public:
-    Programmer(const std::string &db_file) : db_(FlashDatabase::getInstance(db_file)), flash_info_(nullptr)
-    {
-        flash_interface_.reset();
-        prog_interface_.reset();
-        DP_CHECK(db_.isLoaded()) << "invalid flash database file: " << db_file;
-        DP_LOG(INFO) << "Flash database has " << db_.getCount() << " flash(es)";
-    }
+    Programmer(const std::string &db_file);
     [[nodiscard]] virtual DpError Detect(std::set<std::string> &flash_name_list) noexcept;
     const FlashInfo *Select(const std::string &flash_name) noexcept;
     [[nodiscard]] bool isSelected() const noexcept { return flash_info_ != nullptr; }
     [[nodiscard]] std::shared_ptr<FlashInterface> getSelectedFlash() const noexcept { return flash_interface_; }
+    DpError ShutDown() { return prog_interface_ ? prog_interface_->ShutDown() : kSc; }
 
    protected:
     [[nodiscard]] DpError ListFlash(std::pair<uint32_t, uint32_t> readid_code, uint32_t power_vdd, uint32_t jedec_id,

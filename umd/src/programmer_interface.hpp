@@ -1,17 +1,31 @@
 #ifndef PROGRAMMER_INTERFACE_HPP
 #define PROGRAMMER_INTERFACE_HPP
 
+#include "programmer_hal.hpp"
 #include "dp_config.h"
 #include "dp_error.h"
 #include "dp_logging.hpp"
 #include "dp_type.h"
 
+#include <memory>
+
 namespace dp
 {
 class ProgrammerInterface
 {
+    friend class Programmer;
+
    public:
-    ProgrammerInterface(void *handler) : handler_(handler) {}
+    enum programmer_type_e
+    {
+        kProgUnknown,
+        kProgSF100,
+        kProgSF600,
+        kProgSF700,
+        kProgSF600G2
+    };
+    ProgrammerInterface(const std::shared_ptr<ProgrammerHal> &hal) : hal_(hal), prog_type_(kProgUnknown) {}
+    virtual DpError Init(uint32_t timeout = CONFIG_DEFAULT_TIMEOUT) noexcept;
     [[nodiscard]] virtual DpError Polling(uint32_t timeout = CONFIG_DEFAULT_TIMEOUT) noexcept
     {
         DP_CHECK(false) << "Undefined API::" << __PRETTY_FUNCTION__;
@@ -57,8 +71,26 @@ class ProgrammerInterface
     }
 
    protected:
-    void *handler_;
+    [[nodiscard]] virtual DpError ShutDown() noexcept
+    {
+        DP_CHECK(false) << "Undefined API::" << __PRETTY_FUNCTION__;
+        return kSc;
+    }
+    int StartAppli();
+    int AssignProg();
+    int LeaveStandaloneMode();
+    int QueryBoard();
+    int CheckProgrammerInfo();
+    private:
+    const std::shared_ptr<ProgrammerHal> &hal_;
+    programmer_type_e prog_type_;
+    std::string hardware_id_;
+    uint32_t firmware_ver_;
+    uint32_t io1_selection_;
+    uint32_t io4_selection_;
+    uint32_t is_new_command;
 };  // class ProgrammerInterface
+
 }  // namespace dp
 
 #endif  // PROGRAMMER_INTERFACE_HPP

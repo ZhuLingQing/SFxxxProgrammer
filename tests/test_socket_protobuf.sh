@@ -8,9 +8,9 @@ NEED_BUILD=0
 
 echo "PWD: $CUR_DIR"
 
-if [ ! -f $PROJ_DIR/build/$CASE_NAME ]; then
+if [ ! -f $PROJ_DIR/build/socket_cli ] && [ ! -f $PROJ_DIR/build/socket_svr ]; then
     NEED_BUILD=1
-elif [ $# -gt 0 ] && [ "$1" == "rebuild" ]; then
+elif [ $# -gt 0 ] && [ "$1" == "--rebuild" ]; then
     NEED_BUILD=1
 fi
 
@@ -27,6 +27,8 @@ fi
 # generate socket_cli
 g++ -o $PROJ_DIR/build/socket_cli -std=c++20 \
     $SRC_DIR/message.pb.cc -lprotobuf -pthread \
+    -I$PROJ_DIR/umd/inc \
+    -I$PROJ_DIR/third-party/plog/include \
     $SRC_DIR/socket_cli.cpp 
 if [ $? -ne 0 ]; then
     echo "socket_cli Compile failed"
@@ -35,6 +37,8 @@ fi
 # generate socket_svr
 g++ -o $PROJ_DIR/build/socket_svr -std=c++20 \
     $SRC_DIR/message.pb.cc -lprotobuf -pthread \
+    -I$PROJ_DIR/umd/inc \
+    -I$PROJ_DIR/third-party/plog/include \
     $SRC_DIR/socket_svr.cpp 
 if [ $? -ne 0 ]; then
     echo "socket_svr Compile failed"
@@ -47,7 +51,7 @@ fi
 echo "execute $CASE_NAME.cpp"
 start=$(date +%s%N)
 $PROJ_DIR/build/socket_svr & \
-sleep 0.5
+sleep 1
 $PROJ_DIR/build/socket_cli
 end=$(date +%s%N)
 echo "Execution time: $(( (end - start) / 1000000 )) milliseconds"
