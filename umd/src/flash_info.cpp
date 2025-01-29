@@ -11,7 +11,7 @@
 #include "nlohmann/json.hpp"
 using json = nlohmann::json;
 
-#define DumpInfo(name) DP_LOG(INFO) << #name << ": " << name
+#define DumpInfo(name) std::cout << #name << ": " << name << std::endl;
 #define MakeClass(name)      \
     {                        \
 #name, kClass_##name \

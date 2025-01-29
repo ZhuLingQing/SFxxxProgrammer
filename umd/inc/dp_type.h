@@ -1,7 +1,6 @@
 #ifndef DP_TYPE_H
 #define DP_TYPE_H
 
-#ifdef __cplusplus
 namespace dp
 {
 // Indicate that is a internal API.
@@ -40,8 +39,8 @@ enum DevAttri
 
 enum DevPowerChan
 {
-    kPwrVcc = 0,
-    kPwrVpp = 1,
+    kPowerVcc = 0,
+    kPowerVpp = 1,
     kPowerChanMax,
 };
 
@@ -52,27 +51,34 @@ enum DevResetType
     kDevWarmReset = 0x00000002,
 };
 
-enum DevType
+enum DevFlashSeries
 {
-    kDevUnknown = 0,
-    kDevSFxxx = 1,
-    kDevGangProgrammer = 2,
+    kFlashSeries25 = 0,
+    kFlashSeries45 = 8,
 };
-}  // namespace dp
-#else
-typedef enum
-{
-    kDevUnknown = 0,
-    kDevSFxxx = 1,
-    kDevGangProgrammer = 2,
-} DevType;
-#endif
 
-enum cs_pin_state_e
+enum DevPowerVccSet
 {
-    kCsHigh,
-    kCsKeepLow,
+    kVccOff = 0,
+    kVcc3V5 = 0x10,
+    kVcc2V5 = 0x11,
+    kVcc1V8 = 0x12,
+    kVccKeep = 0xFF
 };
+
+enum DevBusClockSet
+{
+    kClk24M = 0,
+    kClk8M,
+    kClk12M,
+    kClk3M,
+    kClk2M18,
+    kClk1M5,
+    kClk750K,
+    kClk375K
+};
+
+}  // namespace dp
 
 #define FLASH_ID_MASK(len) (((~0U) >> (32 - (len)*8)))
 

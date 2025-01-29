@@ -1,5 +1,5 @@
 // g++ -o ./build/test -std=c++20 \
-    ./umd/test/test_flash_operation.cpp \
+    ./umd/test/test_skt_prog.cpp \
     ./umd/src/flash_database.cpp \
     ./umd/src/flash_info.cpp \
     ./umd/src/flash_interface.cpp \
@@ -10,22 +10,27 @@
 #include <cstdlib>  // 包含getenv函数
 #include <iostream>
 
-#include "dp_logging.hpp"
+#include "hal_skt_device.hpp"
+#include "dummy_programmer.hpp"
 #include "flash_database.hpp"
-#include "socket_programmer.hpp"
+#include "flash_interface.hpp"
+#include "programmer_interface.hpp"
 
-using FlashDatabase = dp::FlashDatabase;
-using SktProgrammer = dp::SktProgrammer;
+#include "dp_logging.hpp"
 
 int main(int argc, char* argv[])
 {
+    std::string ip = "127.0.0.1";
     const char* plog_level = getenv("PLOG_LEVEL");
     std::cout << "export PLOG_LEVEL=" << plog_level << " could adjust log level" << std::endl;
     std::cout << "export DUMMY_ID=" << getenv("DUMMY_ID") << " for dummy read id check" << std::endl;
     // DP_LOG_INIT_WITH_CONSOLE(INFO, "./test.log", 30000, 3);
     DP_LOG_INIT_CONSOLE_ONLY(static_cast<plog::Severity>(plog_level ? std::atoi(plog_level) : plog::info));
 
-    std::unique_ptr<SktProgrammer> prog = std::make_unique<SktProgrammer>(argc > 1 ? argv[1] : "");
+    std::shared_ptr<dp::ProgrammerHal> hal = std::make_shared<dp::HalSktDevice>(ip);
+    std::shared_ptr<dp::ProgrammerInterface> interface = std::make_shared<dp::DummyProgInterface>(hal);
+    std::unique_ptr<dp::DummyProgrammer> prog =
+        std::make_unique<dp::DummyProgrammer>(argc > 1 ? argv[1] : "", interface);
 
     std::set<std::string> flash_name_list;
     auto r = prog->Detect(flash_name_list);
@@ -65,6 +70,5 @@ int main(int argc, char* argv[])
             std::cout << info->getName() << ": identify OK. ID: " << std::hex << id << std::endl;
         }
     }
-    prog->ShutDown();
     return 0;
 }

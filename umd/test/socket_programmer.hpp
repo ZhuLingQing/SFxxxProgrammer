@@ -51,11 +51,11 @@ class SktProgInterface : public ProgrammerInterface
         if (r) return r;
         return Read(flash::kAttrGetPowerConfig, attribute) == 0 ? kSc : kHardwareUnsupported;
     }
-    DpError PowerConfig(DevPowerChan chan, int mvolt) noexcept override
+    DpError setPowerConfig(DevPowerChan chan, int mvolt) noexcept override
     {
         return Send(flash::kAttrPowerConfig, mvolt) == 0 ? kSc : kHardwareUnsupported;
     }
-    DpError TransferIn(uint8_t *data, size_t size, cs_pin_state_e cs = kCsHigh) noexcept
+    DpError TransceiveIn(uint8_t *data, size_t size, cs_pin_state_e cs = kCsHigh) noexcept
     {
         std::vector<uint8_t> byte_vct;
         int r = Send(flash::kCtrlIn, size, cs == kCsKeepLow ? false : true);
@@ -65,7 +65,7 @@ class SktProgInterface : public ProgrammerInterface
         memcpy(data, byte_vct.data(), size);
         return kSc;
     }
-    DpError TransferOut(const uint8_t *data, size_t size, cs_pin_state_e cs = kCsHigh) noexcept
+    DpError TransceiveOut(const uint8_t *data, size_t size, cs_pin_state_e cs = kCsHigh) noexcept
     {
         std::vector<uint8_t> byte_vct(data, data + size);
         int r = Send(flash::kCtrlOut, size, cs == kCsKeepLow ? false : true, &byte_vct);

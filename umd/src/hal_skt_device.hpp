@@ -46,6 +46,7 @@ class HalSktDevice : public ProgrammerHal
             fprintf(stderr, "Failed to connect to server\n");
             close(fd_);
             fd_ = -1;
+            return -1;
         }
         return 0;
     }
@@ -73,7 +74,7 @@ class HalSktDevice : public ProgrammerHal
         if (buf && size)
         {
             std::string byte_string;
-            byte_string.assign(buf, buf + size);
+            byte_string.assign(reinterpret_cast<uint8_t*>(buf), reinterpret_cast<uint8_t*>(buf) + size);
             pkt.set_payload(byte_string);
         }
 

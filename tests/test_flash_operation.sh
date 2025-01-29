@@ -20,6 +20,7 @@ g++ -o $PROJ_DIR/build/$CASE_NAME -std=c++20 \
     $PROJ_DIR/umd/src/flash_info.cpp \
     $PROJ_DIR/umd/src/flash_database.cpp \
     $PROJ_DIR/umd/src/programmer.cpp \
+    $PROJ_DIR/umd/src/programmer_interface.cpp \
     $PROJ_DIR/umd/src/flash_interface.cpp \
     -I$PROJ_DIR/umd/src \
     -I$PROJ_DIR/umd/inc \

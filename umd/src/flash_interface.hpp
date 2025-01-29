@@ -1,5 +1,5 @@
-#ifndef FLASH_MEMORY_HPP
-#define FLASH_MEMORY_HPP
+#ifndef FLASH_INTERFACE_HPP
+#define FLASH_INTERFACE_HPP
 
 #include <memory>
 #include <mutex>
@@ -11,21 +11,91 @@
 
 namespace dp
 {
-class Programmer;
 class ProgrammerInterface;
 class FlashInfo;
 
 class FlashInterface
 {
-    enum flash_attr_e
+    enum run_state_e
     {
-        kAttrTransSize,
-        kAttrTransOut,
-        kAttrTransIn,
-        kAttrClockFreq,
-        kAttrIoMode,
+        kThreadIdle = 0,
+        kThreadLaunching,
+        kThreadRunning,
+        kThreadStopping,
+        kThreadTerminated,
     };
-    enum flash_cmd_e
+
+   public:
+    FlashInterface(std::shared_ptr<ProgrammerInterface> interface, const FlashInfo *flash_info, int site_index = 0);
+    // Programmer &getProgrammer() { return programmer_; }
+    int getIndex() const { return site_index_; }
+    // int getDieCount() const { return die_.size(); }
+    // MemDie &getDie(int index) { return die_[index]; }
+    const FlashInfo *getFlashInfo() const { return flash_info_; }
+
+    // [[nodiscard]] virtual DpError setAttribute(flash_attr_e attr, long value);
+    // [[nodiscard]] virtual DpError getAttribute(flash_attr_e attr, long &value);
+    // [[nodiscard]] virtual long getAttribute(flash_attr_e attr);
+    [[nodiscard]] virtual bool Identify();
+    [[nodiscard]] virtual uint32_t ReadId();
+
+    [[nodiscard]] virtual DpError ChipErase() { return kSc; }
+    [[nodiscard]] virtual DpError BlockErase(uint32_t block_index, size_t count = 1) { return kSc; }
+    [[nodiscard]] virtual DpError PageProgram(uint32_t page_index, const void *buf, size_t size) { return kSc; }
+    [[nodiscard]] virtual DpError PageRead(uint32_t page_index, void *buf, size_t size) { return kSc; }
+
+    [[nodiscard]] virtual DpError Write(const void *buf, size_t size, uint64_t address = 0) { return kSc; }
+    [[nodiscard]] virtual DpError Read(void *buf, size_t size, uint64_t address = 0) { return kSc; }
+    [[nodiscard]] virtual DpError Verify(const void *buf, size_t size, uint64_t address = 0) { return kSc; }
+    [[nodiscard]] virtual DpError BlankCheck(size_t size, uint64_t address = 0) { return kSc; }
+
+    bool Stop()
+    {
+        if (run_state_ == kThreadRunning)
+        {
+            run_state_ = kThreadStopping;
+            return true;
+        }
+        return false;
+    }
+
+   protected:
+    [[nodiscard]] virtual DpError ReadStatus(uint16_t &status) { return kSc; }
+    [[nodiscard]] uint16_t ReadStatus()
+    {
+        uint16_t status;
+        ReadStatus(status);
+        return status;
+    }
+    [[nodiscard]] virtual DpError WriteEnable() { return kSc; }
+    [[nodiscard]] virtual DpError WriteDisable() { return kSc; }
+    [[nodiscard]] virtual DpError Unprotect(uint32_t retry = 5) { return kSc; }
+    [[nodiscard]] virtual bool isProtected() { return false; }
+
+    [[nodiscard]] virtual DpError WEL(uint32_t retry = 5) { return kSc; }
+    [[nodiscard]] virtual DpError WIP(uint32_t timeout_usec = ~0U) { return kSc; }
+
+    /// PreBatchOperation is a virtual function that is intended to be overridden in a derived class. It is used to
+    /// perform any necessary setup or initialization before a batch operation. The function returns a DpError type,
+    /// which indicates the result of the operation. If the operation is successful, the function returns kSc, which is
+    /// a predefined constant of type DpError.
+    [[nodiscard]] virtual DpError PreBatchOperation() { return kSc; }
+    [[nodiscard]] virtual DpError PostBatchOperation() { return kSc; }
+
+    std::recursive_mutex mutex_;
+
+    std::shared_ptr<ProgrammerInterface> interface_;
+    const FlashInfo *flash_info_;
+    int site_index_;
+    run_state_e run_state_;
+    // std::vector<MemDie> die_;
+    static const uint32_t kSleepResolutionUsec_;
+};
+
+class FlashInterface25 : public FlashInterface
+{
+   public:
+    enum flash25_cmd_e
     {
         kCmdWriteEnable = 0x06,
         kCmdWriteDisable = 0x04,
@@ -54,7 +124,7 @@ class FlashInterface
         kCmdEnter4BitMode = 0xB7,
         kCmdExit4BitMode = 0xE9,
     };
-    enum flash_status_e
+    enum flash25_status_e
     {
         kStatusWIP = 0x01,
         kStatusWEL = 0x02,
@@ -67,97 +137,35 @@ class FlashInterface
 
         kStatusBP = 0x9C,
     };
+    [[nodiscard]] DpError ChipErase() override;
+    [[nodiscard]] DpError BlockErase(uint32_t block_index, size_t count = 1) override;
+    [[nodiscard]] DpError PageProgram(uint32_t page_index, const void *buf, size_t size) override;
+    [[nodiscard]] DpError PageRead(uint32_t page_index, void *buf, size_t size) override;
 
-   public:
-    // FlashInterface(ProgrammerInterface &prog_interface, const FlashInfo *flash_info, int site_index = 0);
-    FlashInterface(Programmer *prog_, int site_index = 0);
-    // Programmer &getProgrammer() { return programmer_; }
-    int getIndex() const { return site_index_; }
-    // int getDieCount() const { return die_.size(); }
-    // MemDie &getDie(int index) { return die_[index]; }
-    const FlashInfo *getFlashInfo() const { return flash_info_; }
-
-    [[nodiscard]] virtual DpError setAttribute(flash_attr_e attr, long value);
-    [[nodiscard]] virtual DpError getAttribute(flash_attr_e attr, long &value);
-    [[nodiscard]] virtual long getAttribute(flash_attr_e attr);
-    [[nodiscard]] virtual bool Identify();
-    [[nodiscard]] virtual DpError ReadStatus(uint8_t &status);
-    [[nodiscard]] uint8_t ReadStatus();
-    [[nodiscard]] virtual DpError WriteEnable();
-    [[nodiscard]] virtual DpError WriteDisable();
-    [[nodiscard]] virtual DpError Unprotect(uint32_t retry = 5);
-    [[nodiscard]] virtual bool isProtected();
-    [[nodiscard]] virtual uint32_t ReadId();
-    [[nodiscard]] virtual DpError ChipErase();
-    [[nodiscard]] virtual DpError BlockErase(uint32_t block_index, size_t count = 1);
-    [[nodiscard]] virtual DpError PageProgram(uint32_t page_index, const void *buf, size_t size);
-    [[nodiscard]] virtual DpError PageRead(uint32_t page_index, void *buf, size_t size);
-
-    [[nodiscard]] virtual DpError Write(const void *buf, size_t size, uint64_t address = 0);
-    [[nodiscard]] virtual DpError Read(void *buf, size_t size, uint64_t address = 0);
-    [[nodiscard]] virtual DpError Verify(const void *buf, size_t size, uint64_t address = 0);
-    [[nodiscard]] virtual DpError BlankCheck(size_t size, uint64_t address = 0);
-
-    /// PreBatchOperation is a virtual function that is intended to be overridden in a derived class. It is used to
-    /// perform any necessary setup or initialization before a batch operation. The function returns a DpError type,
-    /// which indicates the result of the operation. If the operation is successful, the function returns kSc, which is
-    /// a predefined constant of type DpError.
-    [[nodiscard]] virtual DpError PreBatchOperation() { return kSc; }
-    [[nodiscard]] virtual DpError PostBatchOperation() { return kSc; }
+    [[nodiscard]] DpError Write(const void *buf, size_t size, uint64_t address = 0) override;
+    [[nodiscard]] DpError Read(void *buf, size_t size, uint64_t address = 0) override;
+    [[nodiscard]] DpError Verify(const void *buf, size_t size, uint64_t address = 0) override;
+    [[nodiscard]] DpError BlankCheck(size_t size, uint64_t address = 0) override;
 
    protected:
-    [[nodiscard]] virtual DpError pollingWEL(uint32_t retry = 5);
-    [[nodiscard]] virtual DpError pollingWIP(uint32_t timeout_usec = ~0U);
-    // Programmer &programmer_;
-    std::recursive_mutex mutex_;
+    [[nodiscard]] DpError ReadStatus(uint16_t &status) override;
+    [[nodiscard]] DpError WriteEnable() override;
+    [[nodiscard]] DpError WriteDisable() override;
+    [[nodiscard]] DpError Unprotect(uint32_t retry = 5) override;
+    [[nodiscard]] bool isProtected() override;
+
+    [[nodiscard]] DpError WEL(uint32_t retry = 5) override;
+    [[nodiscard]] DpError WIP(uint32_t timeout_usec = ~0U) override;
+
+    // [[nodiscard]] DpError PreBatchOperation() override;
+    // [[nodiscard]] DpError PostBatchOperation() override;
 
    private:
-    int site_index_;
-    // std::vector<MemDie> die_;
-    const FlashInfo *flash_info_;
-    std::shared_ptr<ProgrammerInterface> prog_interface_;
-    static const uint32_t kSleepResolutionUsec_;
+    int enable_quad_io_;
+    int protected_val_;
+    bool addr_4_byte_mode_;
 };
 
-// class SpiFlashDetector : public FlashInterface
-// {
-// public:
-//     SpiFlashDetector(std::unique_ptr<Programmer>& programmer, int site_index = 0) : FlashInterface(programmer,
-//     site_index) {
-//     }
-//     int ReadId(std::vector<uint8_t> &id) override;
-//     int ReadUID(std::vector<uint8_t> &uid) override;
-//     int IoControl(struct spi_io_ctrl_t &ctrl, const uint8_t *idata, uint8_t *odata, uint32_t timeout = 0) override;
-// };
-
-// class MemDie
-// {
-// public:
-//     MemDie(FlashInterface& flash, int die_index_ = 0) : flash_(flash), die_index_(die_index_),
-//     die_info_ (flash.getFlashInfo().die_info[die_index_]) {
-//     }
-
-//     int getIndex() const { return die_index_; }
-//     bool valid() const { return die_info_.die_size > 0; }
-//     const struct die_info_t& getDieInfo() const { return die_info_; }
-
-//     virtual DpError ReadId(std::vector<uint8_t> &id) { return flash_.ReadId(id); }
-//     virtual DpError ReadUID(std::vector<uint8_t> &id) { return flash_.ReadUID(id); }
-//     virtual DpError IoControl(struct spi_io_ctrl_t &ctrl, const uint8_t *idata, uint8_t *odata, uint32_t timeout = 0)
-//     {
-//         return flash_.IoControl(ctrl, idata, odata, timeout);
-//     }
-//     virtual DpError Erase() = 0;
-//     virtual DpError BlockErase(int block_index, int count = 1) = 0;
-//     virtual DpError PageProgram(long page_index, const void *buf, size_t size) = 0;
-//     virtual DpError PageRead(long page_index, void *buf, size_t size) = 0;
-//     virtual DpError RandomProgram(long address, const void *buf, size_t size) = 0;
-//     virtual DpError RandomRead(long address, void *buf, size_t size) = 0;
-// private:
-//     FlashInterface& flash_;
-//     int die_index_;
-//     const struct die_info_t &die_info_;
-// };
 }  // namespace dp
 
-#endif  // FLASH_MEMORY_HPP
+#endif  // FLASH_INTERFACE_HPP

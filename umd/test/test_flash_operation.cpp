@@ -13,9 +13,8 @@
 #include "dp_logging.hpp"
 #include "dummy_programmer.hpp"
 #include "flash_database.hpp"
-
-using FlashDatabase = dp::FlashDatabase;
-using DummyProgrammer = dp::DummyProgrammer;
+#include "flash_interface.hpp"
+#include "programmer_interface.hpp"
 
 int main(int argc, char* argv[])
 {
@@ -25,7 +24,10 @@ int main(int argc, char* argv[])
     // DP_LOG_INIT_WITH_CONSOLE(INFO, "./test.log", 30000, 3);
     DP_LOG_INIT_CONSOLE_ONLY(static_cast<plog::Severity>(plog_level ? std::atoi(plog_level) : plog::info));
 
-    std::unique_ptr<DummyProgrammer> prog = std::make_unique<DummyProgrammer>(argc > 1 ? argv[1] : "");
+    std::shared_ptr<dp::ProgrammerHal> hal = std::make_shared<dp::DummyHal>();
+    std::shared_ptr<dp::ProgrammerInterface> interface = std::make_shared<dp::DummyProgInterface>(hal);
+    std::unique_ptr<dp::DummyProgrammer> prog =
+        std::make_unique<dp::DummyProgrammer>(argc > 1 ? argv[1] : "", interface);
 
     std::set<std::string> flash_name_list;
     auto r = prog->Detect(flash_name_list);

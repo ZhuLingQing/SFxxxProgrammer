@@ -1,16 +1,18 @@
 #ifndef PROGRAMMER_INTERFACE_HPP
 #define PROGRAMMER_INTERFACE_HPP
 
-#include "programmer_hal.hpp"
 #include "dp_config.h"
 #include "dp_error.h"
 #include "dp_logging.hpp"
 #include "dp_type.h"
 
+#include <map>
 #include <memory>
 
 namespace dp
 {
+class ProgrammerHal;
+
 class ProgrammerInterface
 {
     friend class Programmer;
@@ -19,76 +21,66 @@ class ProgrammerInterface
     enum programmer_type_e
     {
         kProgUnknown,
+        kProgSimulator,
         kProgSF100,
         kProgSF600,
         kProgSF700,
         kProgSF600G2
     };
-    ProgrammerInterface(const std::shared_ptr<ProgrammerHal> &hal) : hal_(hal), prog_type_(kProgUnknown) {}
-    virtual DpError Init(uint32_t timeout = CONFIG_DEFAULT_TIMEOUT) noexcept;
-    [[nodiscard]] virtual DpError Polling(uint32_t timeout = CONFIG_DEFAULT_TIMEOUT) noexcept
+    ProgrammerInterface(std::shared_ptr<ProgrammerHal> hal) : hal_(hal), prog_type_(kProgUnknown)
     {
-        DP_CHECK(false) << "Undefined API::" << __PRETTY_FUNCTION__;
-        return kSc;
+        memset(power_val_, 0, sizeof(power_val_));
+        flash_series_ = kFlashSeries25;
+        bus_clock_ = CONFIG_DEFAULT_BUS_CLOCK;
     }
-    [[nodiscard]] virtual DpError TransferIn(uint8_t *data, size_t size, cs_pin_state_e cs = kCsHigh) noexcept
+    ~ProgrammerInterface() { Shutdown(); }
+    virtual DpError Init(uint32_t timeout = CONFIG_DEFAULT_TIMEOUT);
+    virtual DpError Shutdown();
+    virtual DpError Polling(uint32_t timeout = CONFIG_DEFAULT_TIMEOUT);
+    virtual DpError TransceiveIn(uint8_t *data, size_t size, bool result_in = false);
+    DpError TransceiveIn(uint8_t &data, bool result_in = false) { return TransceiveIn(&data, 1, result_in); }
+    virtual DpError TransceiveOut(uint8_t *data, size_t size, bool result_in = false);
+    DpError TransceiveOut(uint8_t data, bool result_in = false) { return TransceiveOut(&data, 1, result_in); }
+    virtual DpError PowerOn(DevPowerChan chan);
+    virtual DpError PowerOff(DevPowerChan chan);
+    virtual DpError setPowerConfig(DevPowerChan chan, int mvolt);
+    int getPowerConfig(DevPowerChan chan) const
     {
-        DP_CHECK(false) << "Undefined API::" << __PRETTY_FUNCTION__;
-        return kSc;
+        assert(chan < kPowerChanMax);
+        return power_val_[chan];
     }
-    [[nodiscard]] DpError TransferIn(uint8_t &data, cs_pin_state_e cs = kCsHigh) noexcept
-    {
-        return TransferIn(&data, 1, cs);
-    }
-    [[nodiscard]] virtual DpError TransferOut(const uint8_t *data, size_t size, cs_pin_state_e cs = kCsHigh) noexcept
-    {
-        DP_CHECK(false) << "Undefined API::" << __PRETTY_FUNCTION__;
-        return kSc;
-    }
-    [[nodiscard]] virtual DpError TransferOut(uint8_t data, cs_pin_state_e cs = kCsHigh) noexcept
-    {
-        return TransferOut(&data, 1, cs);
-    }
-    [[nodiscard]] virtual DpError PowerOn() noexcept
-    {
-        DP_CHECK(false) << "Undefined API::" << __PRETTY_FUNCTION__;
-        return kSc;
-    }
-    [[nodiscard]] virtual DpError PowerOff() noexcept
-    {
-        DP_CHECK(false) << "Undefined API::" << __PRETTY_FUNCTION__;
-        return kSc;
-    }
-    [[nodiscard]] virtual DpError PowerConfig(DevPowerChan chan, int mvolt) noexcept
-    {
-        DP_CHECK(false) << "Undefined API::" << __PRETTY_FUNCTION__;
-        return kSc;
-    }
-    [[nodiscard]] virtual int getPowerConfig(DevPowerChan chan) noexcept
-    {
-        DP_CHECK(false) << "Undefined API::" << __PRETTY_FUNCTION__;
-        return 0;
-    }
+    void setFlashSeries(DevFlashSeries series) { flash_series_ = series; }
+    DevFlashSeries getFlashSeries() const { return flash_series_; }
+    virtual DpError setBusClock(int freq);
+    int getBusClock() const { return bus_clock_; }
+    virtual DpError setIO(uint32_t io_state) { return kSc; }    // TODO
+    virtual uint32_t getIO() { return 0; }                      // TODO
+    virtual DpError setLED(uint32_t led_state) { return kSc; }  // TODO
+    virtual uint32_t getLED() { return 0; }                     // TODO
 
    protected:
-    [[nodiscard]] virtual DpError ShutDown() noexcept
-    {
-        DP_CHECK(false) << "Undefined API::" << __PRETTY_FUNCTION__;
-        return kSc;
-    }
-    int StartAppli();
-    int AssignProg();
-    int LeaveStandaloneMode();
-    int QueryBoard();
-    int CheckProgrammerInfo();
-    private:
-    const std::shared_ptr<ProgrammerHal> &hal_;
+    static uint32_t FirmwareVersionConvert(uint32_t h, uint32_t m, uint32_t l) { return (h << 24) | (m << 16) | l; }
+    // int StartAppli();
+    // int AssignProg();
+    // int LeaveStandaloneMode();
+    // int QueryBoard();
+    // int CheckProgrammerInfo();
+   private:
+    std::shared_ptr<ProgrammerHal> hal_;
     programmer_type_e prog_type_;
     std::string hardware_id_;
     uint32_t firmware_ver_;
     uint32_t io1_selection_;
     uint32_t io4_selection_;
     uint32_t is_new_command;
+
+    int power_val_[kPowerChanMax];
+    int bus_clock_;
+
+    DevFlashSeries flash_series_;
+
+    static const std::map<int, DevPowerVccSet> power_vcc_map_;
+    static const std::map<int, DevBusClockSet> bus_clock_map_;
 };  // class ProgrammerInterface
 
 }  // namespace dp

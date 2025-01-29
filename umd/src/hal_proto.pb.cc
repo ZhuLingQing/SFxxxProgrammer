@@ -5,712 +5,776 @@
 
 #include <algorithm>
 
-#include <google/protobuf/stubs/common.h>
-#include <google/protobuf/stubs/port.h>
-#include <google/protobuf/io/coded_stream.h>
-#include <google/protobuf/wire_format_lite_inl.h>
 #include <google/protobuf/descriptor.h>
 #include <google/protobuf/generated_message_reflection.h>
+#include <google/protobuf/io/coded_stream.h>
 #include <google/protobuf/reflection_ops.h>
+#include <google/protobuf/stubs/common.h>
+#include <google/protobuf/stubs/port.h>
 #include <google/protobuf/wire_format.h>
+#include <google/protobuf/wire_format_lite_inl.h>
 // This is a temporary google only hack
 #ifdef GOOGLE_PROTOBUF_ENFORCE_UNIQUENESS
 #include "third_party/protobuf/version.h"
 #endif
 // @@protoc_insertion_point(includes)
 
-namespace proto_hal {
-class HalSktCtrlPacketDefaultTypeInternal {
- public:
-  ::google::protobuf::internal::ExplicitlyConstructed<HalSktCtrlPacket>
-      _instance;
+namespace proto_hal
+{
+class HalSktCtrlPacketDefaultTypeInternal
+{
+   public:
+    ::google::protobuf::internal::ExplicitlyConstructed<HalSktCtrlPacket> _instance;
 } _HalSktCtrlPacket_default_instance_;
-class HalSktDataPacketDefaultTypeInternal {
- public:
-  ::google::protobuf::internal::ExplicitlyConstructed<HalSktDataPacket>
-      _instance;
+class HalSktDataPacketDefaultTypeInternal
+{
+   public:
+    ::google::protobuf::internal::ExplicitlyConstructed<HalSktDataPacket> _instance;
 } _HalSktDataPacket_default_instance_;
 }  // namespace proto_hal
-namespace protobuf_hal_5fproto_2eproto {
-static void InitDefaultsHalSktCtrlPacket() {
-  GOOGLE_PROTOBUF_VERIFY_VERSION;
+namespace protobuf_hal_5fproto_2eproto
+{
+static void InitDefaultsHalSktCtrlPacket()
+{
+    GOOGLE_PROTOBUF_VERIFY_VERSION;
 
-  {
-    void* ptr = &::proto_hal::_HalSktCtrlPacket_default_instance_;
-    new (ptr) ::proto_hal::HalSktCtrlPacket();
-    ::google::protobuf::internal::OnShutdownDestroyMessage(ptr);
-  }
-  ::proto_hal::HalSktCtrlPacket::InitAsDefaultInstance();
+    {
+        void* ptr = &::proto_hal::_HalSktCtrlPacket_default_instance_;
+        new (ptr)::proto_hal::HalSktCtrlPacket();
+        ::google::protobuf::internal::OnShutdownDestroyMessage(ptr);
+    }
+    ::proto_hal::HalSktCtrlPacket::InitAsDefaultInstance();
 }
 
-::google::protobuf::internal::SCCInfo<0> scc_info_HalSktCtrlPacket =
-    {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 0, InitDefaultsHalSktCtrlPacket}, {}};
+::google::protobuf::internal::SCCInfo<0> scc_info_HalSktCtrlPacket = {
+    {ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 0, InitDefaultsHalSktCtrlPacket}, {}};
 
-static void InitDefaultsHalSktDataPacket() {
-  GOOGLE_PROTOBUF_VERIFY_VERSION;
+static void InitDefaultsHalSktDataPacket()
+{
+    GOOGLE_PROTOBUF_VERIFY_VERSION;
 
-  {
-    void* ptr = &::proto_hal::_HalSktDataPacket_default_instance_;
-    new (ptr) ::proto_hal::HalSktDataPacket();
-    ::google::protobuf::internal::OnShutdownDestroyMessage(ptr);
-  }
-  ::proto_hal::HalSktDataPacket::InitAsDefaultInstance();
+    {
+        void* ptr = &::proto_hal::_HalSktDataPacket_default_instance_;
+        new (ptr)::proto_hal::HalSktDataPacket();
+        ::google::protobuf::internal::OnShutdownDestroyMessage(ptr);
+    }
+    ::proto_hal::HalSktDataPacket::InitAsDefaultInstance();
 }
 
-::google::protobuf::internal::SCCInfo<0> scc_info_HalSktDataPacket =
-    {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 0, InitDefaultsHalSktDataPacket}, {}};
+::google::protobuf::internal::SCCInfo<0> scc_info_HalSktDataPacket = {
+    {ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 0, InitDefaultsHalSktDataPacket}, {}};
 
-void InitDefaults() {
-  ::google::protobuf::internal::InitSCC(&scc_info_HalSktCtrlPacket.base);
-  ::google::protobuf::internal::InitSCC(&scc_info_HalSktDataPacket.base);
+void InitDefaults()
+{
+    ::google::protobuf::internal::InitSCC(&scc_info_HalSktCtrlPacket.base);
+    ::google::protobuf::internal::InitSCC(&scc_info_HalSktDataPacket.base);
 }
 
 ::google::protobuf::Metadata file_level_metadata[2];
 const ::google::protobuf::EnumDescriptor* file_level_enum_descriptors[1];
 
 const ::google::protobuf::uint32 TableStruct::offsets[] GOOGLE_PROTOBUF_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
-  ~0u,  // no _has_bits_
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::proto_hal::HalSktCtrlPacket, _internal_metadata_),
-  ~0u,  // no _extensions_
-  ~0u,  // no _oneof_case_
-  ~0u,  // no _weak_field_map_
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::proto_hal::HalSktCtrlPacket, type_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::proto_hal::HalSktCtrlPacket, ctrl_word_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::proto_hal::HalSktCtrlPacket, payload_),
-  ~0u,  // no _has_bits_
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::proto_hal::HalSktDataPacket, _internal_metadata_),
-  ~0u,  // no _extensions_
-  ~0u,  // no _oneof_case_
-  ~0u,  // no _weak_field_map_
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::proto_hal::HalSktDataPacket, data_),
+    ~0u,  // no _has_bits_
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::proto_hal::HalSktCtrlPacket, _internal_metadata_),
+    ~0u,  // no _extensions_
+    ~0u,  // no _oneof_case_
+    ~0u,  // no _weak_field_map_
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::proto_hal::HalSktCtrlPacket, type_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::proto_hal::HalSktCtrlPacket, ctrl_word_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::proto_hal::HalSktCtrlPacket, payload_),
+    ~0u,  // no _has_bits_
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::proto_hal::HalSktDataPacket, _internal_metadata_),
+    ~0u,  // no _extensions_
+    ~0u,  // no _oneof_case_
+    ~0u,  // no _weak_field_map_
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::proto_hal::HalSktDataPacket, data_),
 };
-static const ::google::protobuf::internal::MigrationSchema schemas[] GOOGLE_PROTOBUF_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
-  { 0, -1, sizeof(::proto_hal::HalSktCtrlPacket)},
-  { 8, -1, sizeof(::proto_hal::HalSktDataPacket)},
-};
-
-static ::google::protobuf::Message const * const file_default_instances[] = {
-  reinterpret_cast<const ::google::protobuf::Message*>(&::proto_hal::_HalSktCtrlPacket_default_instance_),
-  reinterpret_cast<const ::google::protobuf::Message*>(&::proto_hal::_HalSktDataPacket_default_instance_),
+static const ::google::protobuf::internal::MigrationSchema schemas[] GOOGLE_PROTOBUF_ATTRIBUTE_SECTION_VARIABLE(
+    protodesc_cold) = {
+    {0, -1, sizeof(::proto_hal::HalSktCtrlPacket)},
+    {8, -1, sizeof(::proto_hal::HalSktDataPacket)},
 };
 
-void protobuf_AssignDescriptors() {
-  AddDescriptors();
-  AssignDescriptors(
-      "hal_proto.proto", schemas, file_default_instances, TableStruct::offsets,
-      file_level_metadata, file_level_enum_descriptors, NULL);
+static ::google::protobuf::Message const* const file_default_instances[] = {
+    reinterpret_cast<const ::google::protobuf::Message*>(&::proto_hal::_HalSktCtrlPacket_default_instance_),
+    reinterpret_cast<const ::google::protobuf::Message*>(&::proto_hal::_HalSktDataPacket_default_instance_),
+};
+
+void protobuf_AssignDescriptors()
+{
+    AddDescriptors();
+    AssignDescriptors("hal_proto.proto", schemas, file_default_instances, TableStruct::offsets, file_level_metadata,
+                      file_level_enum_descriptors, NULL);
 }
 
-void protobuf_AssignDescriptorsOnce() {
-  static ::google::protobuf::internal::once_flag once;
-  ::google::protobuf::internal::call_once(once, protobuf_AssignDescriptors);
+void protobuf_AssignDescriptorsOnce()
+{
+    static ::google::protobuf::internal::once_flag once;
+    ::google::protobuf::internal::call_once(once, protobuf_AssignDescriptors);
 }
 
 void protobuf_RegisterTypes(const ::std::string&) GOOGLE_PROTOBUF_ATTRIBUTE_COLD;
-void protobuf_RegisterTypes(const ::std::string&) {
-  protobuf_AssignDescriptorsOnce();
-  ::google::protobuf::internal::RegisterAllTypes(file_level_metadata, 2);
+void protobuf_RegisterTypes(const ::std::string&)
+{
+    protobuf_AssignDescriptorsOnce();
+    ::google::protobuf::internal::RegisterAllTypes(file_level_metadata, 2);
 }
 
-void AddDescriptorsImpl() {
-  InitDefaults();
-  static const char descriptor[] GOOGLE_PROTOBUF_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
-      "\n\017hal_proto.proto\022\tproto_hal\"[\n\020HalSktCt"
-      "rlPacket\022#\n\004type\030\001 \001(\0162\025.proto_hal.Packe"
-      "tType\022\021\n\tctrl_word\030\002 \001(\004\022\017\n\007payload\030\003 \001("
-      "\014\" \n\020HalSktDataPacket\022\014\n\004data\030\001 \001(\014*Q\n\nP"
-      "acketType\022\014\n\010kCtrlOut\020\000\022\013\n\007kCtrlIn\020\001\022\014\n\010"
-      "kBulkOut\020\002\022\013\n\007kBulkIn\020\003\022\r\n\tkShutdown\020\004b\006"
-      "proto3"
-  };
-  ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-      descriptor, 246);
-  ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
-    "hal_proto.proto", &protobuf_RegisterTypes);
+void AddDescriptorsImpl()
+{
+    InitDefaults();
+    static const char descriptor[] GOOGLE_PROTOBUF_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
+        "\n\017hal_proto.proto\022\tproto_hal\"[\n\020HalSktCt"
+        "rlPacket\022#\n\004type\030\001 \001(\0162\025.proto_hal.Packe"
+        "tType\022\021\n\tctrl_word\030\002 \001(\004\022\017\n\007payload\030\003 \001("
+        "\014\" \n\020HalSktDataPacket\022\014\n\004data\030\001 \001(\014*Q\n\nP"
+        "acketType\022\014\n\010kCtrlOut\020\000\022\013\n\007kCtrlIn\020\001\022\014\n\010"
+        "kBulkOut\020\002\022\013\n\007kBulkIn\020\003\022\r\n\tkShutdown\020\004b\006"
+        "proto3"};
+    ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(descriptor, 246);
+    ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile("hal_proto.proto", &protobuf_RegisterTypes);
 }
 
-void AddDescriptors() {
-  static ::google::protobuf::internal::once_flag once;
-  ::google::protobuf::internal::call_once(once, AddDescriptorsImpl);
+void AddDescriptors()
+{
+    static ::google::protobuf::internal::once_flag once;
+    ::google::protobuf::internal::call_once(once, AddDescriptorsImpl);
 }
 // Force AddDescriptors() to be called at dynamic initialization time.
-struct StaticDescriptorInitializer {
-  StaticDescriptorInitializer() {
-    AddDescriptors();
-  }
+struct StaticDescriptorInitializer
+{
+    StaticDescriptorInitializer() { AddDescriptors(); }
 } static_descriptor_initializer;
 }  // namespace protobuf_hal_5fproto_2eproto
-namespace proto_hal {
-const ::google::protobuf::EnumDescriptor* PacketType_descriptor() {
-  protobuf_hal_5fproto_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_hal_5fproto_2eproto::file_level_enum_descriptors[0];
+namespace proto_hal
+{
+const ::google::protobuf::EnumDescriptor* PacketType_descriptor()
+{
+    protobuf_hal_5fproto_2eproto::protobuf_AssignDescriptorsOnce();
+    return protobuf_hal_5fproto_2eproto::file_level_enum_descriptors[0];
 }
-bool PacketType_IsValid(int value) {
-  switch (value) {
-    case 0:
-    case 1:
-    case 2:
-    case 3:
-    case 4:
-      return true;
-    default:
-      return false;
-  }
+bool PacketType_IsValid(int value)
+{
+    switch (value)
+    {
+        case 0:
+        case 1:
+        case 2:
+        case 3:
+        case 4:
+            return true;
+        default:
+            return false;
+    }
 }
-
 
 // ===================================================================
 
-void HalSktCtrlPacket::InitAsDefaultInstance() {
-}
+void HalSktCtrlPacket::InitAsDefaultInstance() {}
 #if !defined(_MSC_VER) || _MSC_VER >= 1900
 const int HalSktCtrlPacket::kTypeFieldNumber;
 const int HalSktCtrlPacket::kCtrlWordFieldNumber;
 const int HalSktCtrlPacket::kPayloadFieldNumber;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 
-HalSktCtrlPacket::HalSktCtrlPacket()
-  : ::google::protobuf::Message(), _internal_metadata_(NULL) {
-  ::google::protobuf::internal::InitSCC(
-      &protobuf_hal_5fproto_2eproto::scc_info_HalSktCtrlPacket.base);
-  SharedCtor();
-  // @@protoc_insertion_point(constructor:proto_hal.HalSktCtrlPacket)
+HalSktCtrlPacket::HalSktCtrlPacket() : ::google::protobuf::Message(), _internal_metadata_(NULL)
+{
+    ::google::protobuf::internal::InitSCC(&protobuf_hal_5fproto_2eproto::scc_info_HalSktCtrlPacket.base);
+    SharedCtor();
+    // @@protoc_insertion_point(constructor:proto_hal.HalSktCtrlPacket)
 }
 HalSktCtrlPacket::HalSktCtrlPacket(const HalSktCtrlPacket& from)
-  : ::google::protobuf::Message(),
-      _internal_metadata_(NULL) {
-  _internal_metadata_.MergeFrom(from._internal_metadata_);
-  payload_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  if (from.payload().size() > 0) {
-    payload_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.payload_);
-  }
-  ::memcpy(&ctrl_word_, &from.ctrl_word_,
-    static_cast<size_t>(reinterpret_cast<char*>(&type_) -
-    reinterpret_cast<char*>(&ctrl_word_)) + sizeof(type_));
-  // @@protoc_insertion_point(copy_constructor:proto_hal.HalSktCtrlPacket)
-}
-
-void HalSktCtrlPacket::SharedCtor() {
-  payload_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  ::memset(&ctrl_word_, 0, static_cast<size_t>(
-      reinterpret_cast<char*>(&type_) -
-      reinterpret_cast<char*>(&ctrl_word_)) + sizeof(type_));
-}
-
-HalSktCtrlPacket::~HalSktCtrlPacket() {
-  // @@protoc_insertion_point(destructor:proto_hal.HalSktCtrlPacket)
-  SharedDtor();
-}
-
-void HalSktCtrlPacket::SharedDtor() {
-  payload_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-}
-
-void HalSktCtrlPacket::SetCachedSize(int size) const {
-  _cached_size_.Set(size);
-}
-const ::google::protobuf::Descriptor* HalSktCtrlPacket::descriptor() {
-  ::protobuf_hal_5fproto_2eproto::protobuf_AssignDescriptorsOnce();
-  return ::protobuf_hal_5fproto_2eproto::file_level_metadata[kIndexInFileMessages].descriptor;
-}
-
-const HalSktCtrlPacket& HalSktCtrlPacket::default_instance() {
-  ::google::protobuf::internal::InitSCC(&protobuf_hal_5fproto_2eproto::scc_info_HalSktCtrlPacket.base);
-  return *internal_default_instance();
-}
-
-
-void HalSktCtrlPacket::Clear() {
-// @@protoc_insertion_point(message_clear_start:proto_hal.HalSktCtrlPacket)
-  ::google::protobuf::uint32 cached_has_bits = 0;
-  // Prevent compiler warnings about cached_has_bits being unused
-  (void) cached_has_bits;
-
-  payload_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  ::memset(&ctrl_word_, 0, static_cast<size_t>(
-      reinterpret_cast<char*>(&type_) -
-      reinterpret_cast<char*>(&ctrl_word_)) + sizeof(type_));
-  _internal_metadata_.Clear();
-}
-
-bool HalSktCtrlPacket::MergePartialFromCodedStream(
-    ::google::protobuf::io::CodedInputStream* input) {
-#define DO_(EXPRESSION) if (!GOOGLE_PREDICT_TRUE(EXPRESSION)) goto failure
-  ::google::protobuf::uint32 tag;
-  // @@protoc_insertion_point(parse_start:proto_hal.HalSktCtrlPacket)
-  for (;;) {
-    ::std::pair<::google::protobuf::uint32, bool> p = input->ReadTagWithCutoffNoLastTag(127u);
-    tag = p.first;
-    if (!p.second) goto handle_unusual;
-    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // .proto_hal.PacketType type = 1;
-      case 1: {
-        if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(8u /* 8 & 0xFF */)) {
-          int value;
-          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   int, ::google::protobuf::internal::WireFormatLite::TYPE_ENUM>(
-                 input, &value)));
-          set_type(static_cast< ::proto_hal::PacketType >(value));
-        } else {
-          goto handle_unusual;
-        }
-        break;
-      }
-
-      // uint64 ctrl_word = 2;
-      case 2: {
-        if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(16u /* 16 & 0xFF */)) {
-
-          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   ::google::protobuf::uint64, ::google::protobuf::internal::WireFormatLite::TYPE_UINT64>(
-                 input, &ctrl_word_)));
-        } else {
-          goto handle_unusual;
-        }
-        break;
-      }
-
-      // bytes payload = 3;
-      case 3: {
-        if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(26u /* 26 & 0xFF */)) {
-          DO_(::google::protobuf::internal::WireFormatLite::ReadBytes(
-                input, this->mutable_payload()));
-        } else {
-          goto handle_unusual;
-        }
-        break;
-      }
-
-      default: {
-      handle_unusual:
-        if (tag == 0) {
-          goto success;
-        }
-        DO_(::google::protobuf::internal::WireFormat::SkipField(
-              input, tag, _internal_metadata_.mutable_unknown_fields()));
-        break;
-      }
+    : ::google::protobuf::Message(), _internal_metadata_(NULL)
+{
+    _internal_metadata_.MergeFrom(from._internal_metadata_);
+    payload_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    if (from.payload().size() > 0)
+    {
+        payload_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.payload_);
     }
-  }
+    ::memcpy(
+        &ctrl_word_, &from.ctrl_word_,
+        static_cast<size_t>(reinterpret_cast<char*>(&type_) - reinterpret_cast<char*>(&ctrl_word_)) + sizeof(type_));
+    // @@protoc_insertion_point(copy_constructor:proto_hal.HalSktCtrlPacket)
+}
+
+void HalSktCtrlPacket::SharedCtor()
+{
+    payload_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    ::memset(
+        &ctrl_word_, 0,
+        static_cast<size_t>(reinterpret_cast<char*>(&type_) - reinterpret_cast<char*>(&ctrl_word_)) + sizeof(type_));
+}
+
+HalSktCtrlPacket::~HalSktCtrlPacket()
+{
+    // @@protoc_insertion_point(destructor:proto_hal.HalSktCtrlPacket)
+    SharedDtor();
+}
+
+void HalSktCtrlPacket::SharedDtor()
+{
+    payload_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+
+void HalSktCtrlPacket::SetCachedSize(int size) const { _cached_size_.Set(size); }
+const ::google::protobuf::Descriptor* HalSktCtrlPacket::descriptor()
+{
+    ::protobuf_hal_5fproto_2eproto::protobuf_AssignDescriptorsOnce();
+    return ::protobuf_hal_5fproto_2eproto::file_level_metadata[kIndexInFileMessages].descriptor;
+}
+
+const HalSktCtrlPacket& HalSktCtrlPacket::default_instance()
+{
+    ::google::protobuf::internal::InitSCC(&protobuf_hal_5fproto_2eproto::scc_info_HalSktCtrlPacket.base);
+    return *internal_default_instance();
+}
+
+void HalSktCtrlPacket::Clear()
+{
+    // @@protoc_insertion_point(message_clear_start:proto_hal.HalSktCtrlPacket)
+    ::google::protobuf::uint32 cached_has_bits = 0;
+    // Prevent compiler warnings about cached_has_bits being unused
+    (void)cached_has_bits;
+
+    payload_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    ::memset(
+        &ctrl_word_, 0,
+        static_cast<size_t>(reinterpret_cast<char*>(&type_) - reinterpret_cast<char*>(&ctrl_word_)) + sizeof(type_));
+    _internal_metadata_.Clear();
+}
+
+bool HalSktCtrlPacket::MergePartialFromCodedStream(::google::protobuf::io::CodedInputStream* input)
+{
+#define DO_(EXPRESSION) \
+    if (!GOOGLE_PREDICT_TRUE(EXPRESSION)) goto failure
+    ::google::protobuf::uint32 tag;
+    // @@protoc_insertion_point(parse_start:proto_hal.HalSktCtrlPacket)
+    for (;;)
+    {
+        ::std::pair<::google::protobuf::uint32, bool> p = input->ReadTagWithCutoffNoLastTag(127u);
+        tag = p.first;
+        if (!p.second) goto handle_unusual;
+        switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag))
+        {
+            // .proto_hal.PacketType type = 1;
+            case 1: {
+                if (static_cast<::google::protobuf::uint8>(tag) ==
+                    static_cast<::google::protobuf::uint8>(8u /* 8 & 0xFF */))
+                {
+                    int value;
+                    DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                         int, ::google::protobuf::internal::WireFormatLite::TYPE_ENUM>(input, &value)));
+                    set_type(static_cast<::proto_hal::PacketType>(value));
+                }
+                else
+                {
+                    goto handle_unusual;
+                }
+                break;
+            }
+
+            // uint64 ctrl_word = 2;
+            case 2: {
+                if (static_cast<::google::protobuf::uint8>(tag) ==
+                    static_cast<::google::protobuf::uint8>(16u /* 16 & 0xFF */))
+                {
+                    DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                         ::google::protobuf::uint64, ::google::protobuf::internal::WireFormatLite::TYPE_UINT64>(
+                        input, &ctrl_word_)));
+                }
+                else
+                {
+                    goto handle_unusual;
+                }
+                break;
+            }
+
+            // bytes payload = 3;
+            case 3: {
+                if (static_cast<::google::protobuf::uint8>(tag) ==
+                    static_cast<::google::protobuf::uint8>(26u /* 26 & 0xFF */))
+                {
+                    DO_(::google::protobuf::internal::WireFormatLite::ReadBytes(input, this->mutable_payload()));
+                }
+                else
+                {
+                    goto handle_unusual;
+                }
+                break;
+            }
+
+            default: {
+            handle_unusual:
+                if (tag == 0)
+                {
+                    goto success;
+                }
+                DO_(::google::protobuf::internal::WireFormat::SkipField(input, tag,
+                                                                        _internal_metadata_.mutable_unknown_fields()));
+                break;
+            }
+        }
+    }
 success:
-  // @@protoc_insertion_point(parse_success:proto_hal.HalSktCtrlPacket)
-  return true;
+    // @@protoc_insertion_point(parse_success:proto_hal.HalSktCtrlPacket)
+    return true;
 failure:
-  // @@protoc_insertion_point(parse_failure:proto_hal.HalSktCtrlPacket)
-  return false;
+    // @@protoc_insertion_point(parse_failure:proto_hal.HalSktCtrlPacket)
+    return false;
 #undef DO_
 }
 
-void HalSktCtrlPacket::SerializeWithCachedSizes(
-    ::google::protobuf::io::CodedOutputStream* output) const {
-  // @@protoc_insertion_point(serialize_start:proto_hal.HalSktCtrlPacket)
-  ::google::protobuf::uint32 cached_has_bits = 0;
-  (void) cached_has_bits;
+void HalSktCtrlPacket::SerializeWithCachedSizes(::google::protobuf::io::CodedOutputStream* output) const
+{
+    // @@protoc_insertion_point(serialize_start:proto_hal.HalSktCtrlPacket)
+    ::google::protobuf::uint32 cached_has_bits = 0;
+    (void)cached_has_bits;
 
-  // .proto_hal.PacketType type = 1;
-  if (this->type() != 0) {
-    ::google::protobuf::internal::WireFormatLite::WriteEnum(
-      1, this->type(), output);
-  }
+    // .proto_hal.PacketType type = 1;
+    if (this->type() != 0)
+    {
+        ::google::protobuf::internal::WireFormatLite::WriteEnum(1, this->type(), output);
+    }
 
-  // uint64 ctrl_word = 2;
-  if (this->ctrl_word() != 0) {
-    ::google::protobuf::internal::WireFormatLite::WriteUInt64(2, this->ctrl_word(), output);
-  }
+    // uint64 ctrl_word = 2;
+    if (this->ctrl_word() != 0)
+    {
+        ::google::protobuf::internal::WireFormatLite::WriteUInt64(2, this->ctrl_word(), output);
+    }
 
-  // bytes payload = 3;
-  if (this->payload().size() > 0) {
-    ::google::protobuf::internal::WireFormatLite::WriteBytesMaybeAliased(
-      3, this->payload(), output);
-  }
+    // bytes payload = 3;
+    if (this->payload().size() > 0)
+    {
+        ::google::protobuf::internal::WireFormatLite::WriteBytesMaybeAliased(3, this->payload(), output);
+    }
 
-  if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
-    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
-        (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()), output);
-  }
-  // @@protoc_insertion_point(serialize_end:proto_hal.HalSktCtrlPacket)
+    if ((_internal_metadata_.have_unknown_fields() && ::google::protobuf::internal::GetProto3PreserveUnknownsDefault()))
+    {
+        ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
+            (::google::protobuf::internal::GetProto3PreserveUnknownsDefault() ? _internal_metadata_.unknown_fields()
+                                                                              : _internal_metadata_.default_instance()),
+            output);
+    }
+    // @@protoc_insertion_point(serialize_end:proto_hal.HalSktCtrlPacket)
 }
 
 ::google::protobuf::uint8* HalSktCtrlPacket::InternalSerializeWithCachedSizesToArray(
-    bool deterministic, ::google::protobuf::uint8* target) const {
-  (void)deterministic; // Unused
-  // @@protoc_insertion_point(serialize_to_array_start:proto_hal.HalSktCtrlPacket)
-  ::google::protobuf::uint32 cached_has_bits = 0;
-  (void) cached_has_bits;
+    bool deterministic, ::google::protobuf::uint8* target) const
+{
+    (void)deterministic;  // Unused
+    // @@protoc_insertion_point(serialize_to_array_start:proto_hal.HalSktCtrlPacket)
+    ::google::protobuf::uint32 cached_has_bits = 0;
+    (void)cached_has_bits;
 
-  // .proto_hal.PacketType type = 1;
-  if (this->type() != 0) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteEnumToArray(
-      1, this->type(), target);
-  }
+    // .proto_hal.PacketType type = 1;
+    if (this->type() != 0)
+    {
+        target = ::google::protobuf::internal::WireFormatLite::WriteEnumToArray(1, this->type(), target);
+    }
 
-  // uint64 ctrl_word = 2;
-  if (this->ctrl_word() != 0) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteUInt64ToArray(2, this->ctrl_word(), target);
-  }
+    // uint64 ctrl_word = 2;
+    if (this->ctrl_word() != 0)
+    {
+        target = ::google::protobuf::internal::WireFormatLite::WriteUInt64ToArray(2, this->ctrl_word(), target);
+    }
 
-  // bytes payload = 3;
-  if (this->payload().size() > 0) {
-    target =
-      ::google::protobuf::internal::WireFormatLite::WriteBytesToArray(
-        3, this->payload(), target);
-  }
+    // bytes payload = 3;
+    if (this->payload().size() > 0)
+    {
+        target = ::google::protobuf::internal::WireFormatLite::WriteBytesToArray(3, this->payload(), target);
+    }
 
-  if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
-    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
-        (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()), target);
-  }
-  // @@protoc_insertion_point(serialize_to_array_end:proto_hal.HalSktCtrlPacket)
-  return target;
+    if ((_internal_metadata_.have_unknown_fields() && ::google::protobuf::internal::GetProto3PreserveUnknownsDefault()))
+    {
+        target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
+            (::google::protobuf::internal::GetProto3PreserveUnknownsDefault() ? _internal_metadata_.unknown_fields()
+                                                                              : _internal_metadata_.default_instance()),
+            target);
+    }
+    // @@protoc_insertion_point(serialize_to_array_end:proto_hal.HalSktCtrlPacket)
+    return target;
 }
 
-size_t HalSktCtrlPacket::ByteSizeLong() const {
-// @@protoc_insertion_point(message_byte_size_start:proto_hal.HalSktCtrlPacket)
-  size_t total_size = 0;
+size_t HalSktCtrlPacket::ByteSizeLong() const
+{
+    // @@protoc_insertion_point(message_byte_size_start:proto_hal.HalSktCtrlPacket)
+    size_t total_size = 0;
 
-  if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
-    total_size +=
-      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
-        (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()));
-  }
-  // bytes payload = 3;
-  if (this->payload().size() > 0) {
-    total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::BytesSize(
-        this->payload());
-  }
+    if ((_internal_metadata_.have_unknown_fields() && ::google::protobuf::internal::GetProto3PreserveUnknownsDefault()))
+    {
+        total_size += ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize((
+            ::google::protobuf::internal::GetProto3PreserveUnknownsDefault() ? _internal_metadata_.unknown_fields()
+                                                                             : _internal_metadata_.default_instance()));
+    }
+    // bytes payload = 3;
+    if (this->payload().size() > 0)
+    {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::BytesSize(this->payload());
+    }
 
-  // uint64 ctrl_word = 2;
-  if (this->ctrl_word() != 0) {
-    total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::UInt64Size(
-        this->ctrl_word());
-  }
+    // uint64 ctrl_word = 2;
+    if (this->ctrl_word() != 0)
+    {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::UInt64Size(this->ctrl_word());
+    }
 
-  // .proto_hal.PacketType type = 1;
-  if (this->type() != 0) {
-    total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::EnumSize(this->type());
-  }
+    // .proto_hal.PacketType type = 1;
+    if (this->type() != 0)
+    {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::EnumSize(this->type());
+    }
 
-  int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
-  SetCachedSize(cached_size);
-  return total_size;
+    int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
+    SetCachedSize(cached_size);
+    return total_size;
 }
 
-void HalSktCtrlPacket::MergeFrom(const ::google::protobuf::Message& from) {
-// @@protoc_insertion_point(generalized_merge_from_start:proto_hal.HalSktCtrlPacket)
-  GOOGLE_DCHECK_NE(&from, this);
-  const HalSktCtrlPacket* source =
-      ::google::protobuf::internal::DynamicCastToGenerated<const HalSktCtrlPacket>(
-          &from);
-  if (source == NULL) {
-  // @@protoc_insertion_point(generalized_merge_from_cast_fail:proto_hal.HalSktCtrlPacket)
-    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
-  } else {
-  // @@protoc_insertion_point(generalized_merge_from_cast_success:proto_hal.HalSktCtrlPacket)
-    MergeFrom(*source);
-  }
+void HalSktCtrlPacket::MergeFrom(const ::google::protobuf::Message& from)
+{
+    // @@protoc_insertion_point(generalized_merge_from_start:proto_hal.HalSktCtrlPacket)
+    GOOGLE_DCHECK_NE(&from, this);
+    const HalSktCtrlPacket* source =
+        ::google::protobuf::internal::DynamicCastToGenerated<const HalSktCtrlPacket>(&from);
+    if (source == NULL)
+    {
+        // @@protoc_insertion_point(generalized_merge_from_cast_fail:proto_hal.HalSktCtrlPacket)
+        ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+    }
+    else
+    {
+        // @@protoc_insertion_point(generalized_merge_from_cast_success:proto_hal.HalSktCtrlPacket)
+        MergeFrom(*source);
+    }
 }
 
-void HalSktCtrlPacket::MergeFrom(const HalSktCtrlPacket& from) {
-// @@protoc_insertion_point(class_specific_merge_from_start:proto_hal.HalSktCtrlPacket)
-  GOOGLE_DCHECK_NE(&from, this);
-  _internal_metadata_.MergeFrom(from._internal_metadata_);
-  ::google::protobuf::uint32 cached_has_bits = 0;
-  (void) cached_has_bits;
+void HalSktCtrlPacket::MergeFrom(const HalSktCtrlPacket& from)
+{
+    // @@protoc_insertion_point(class_specific_merge_from_start:proto_hal.HalSktCtrlPacket)
+    GOOGLE_DCHECK_NE(&from, this);
+    _internal_metadata_.MergeFrom(from._internal_metadata_);
+    ::google::protobuf::uint32 cached_has_bits = 0;
+    (void)cached_has_bits;
 
-  if (from.payload().size() > 0) {
-
-    payload_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.payload_);
-  }
-  if (from.ctrl_word() != 0) {
-    set_ctrl_word(from.ctrl_word());
-  }
-  if (from.type() != 0) {
-    set_type(from.type());
-  }
+    if (from.payload().size() > 0)
+    {
+        payload_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.payload_);
+    }
+    if (from.ctrl_word() != 0)
+    {
+        set_ctrl_word(from.ctrl_word());
+    }
+    if (from.type() != 0)
+    {
+        set_type(from.type());
+    }
 }
 
-void HalSktCtrlPacket::CopyFrom(const ::google::protobuf::Message& from) {
-// @@protoc_insertion_point(generalized_copy_from_start:proto_hal.HalSktCtrlPacket)
-  if (&from == this) return;
-  Clear();
-  MergeFrom(from);
+void HalSktCtrlPacket::CopyFrom(const ::google::protobuf::Message& from)
+{
+    // @@protoc_insertion_point(generalized_copy_from_start:proto_hal.HalSktCtrlPacket)
+    if (&from == this) return;
+    Clear();
+    MergeFrom(from);
 }
 
-void HalSktCtrlPacket::CopyFrom(const HalSktCtrlPacket& from) {
-// @@protoc_insertion_point(class_specific_copy_from_start:proto_hal.HalSktCtrlPacket)
-  if (&from == this) return;
-  Clear();
-  MergeFrom(from);
+void HalSktCtrlPacket::CopyFrom(const HalSktCtrlPacket& from)
+{
+    // @@protoc_insertion_point(class_specific_copy_from_start:proto_hal.HalSktCtrlPacket)
+    if (&from == this) return;
+    Clear();
+    MergeFrom(from);
 }
 
-bool HalSktCtrlPacket::IsInitialized() const {
-  return true;
+bool HalSktCtrlPacket::IsInitialized() const { return true; }
+
+void HalSktCtrlPacket::Swap(HalSktCtrlPacket* other)
+{
+    if (other == this) return;
+    InternalSwap(other);
+}
+void HalSktCtrlPacket::InternalSwap(HalSktCtrlPacket* other)
+{
+    using std::swap;
+    payload_.Swap(&other->payload_, &::google::protobuf::internal::GetEmptyStringAlreadyInited(), GetArenaNoVirtual());
+    swap(ctrl_word_, other->ctrl_word_);
+    swap(type_, other->type_);
+    _internal_metadata_.Swap(&other->_internal_metadata_);
 }
 
-void HalSktCtrlPacket::Swap(HalSktCtrlPacket* other) {
-  if (other == this) return;
-  InternalSwap(other);
+::google::protobuf::Metadata HalSktCtrlPacket::GetMetadata() const
+{
+    protobuf_hal_5fproto_2eproto::protobuf_AssignDescriptorsOnce();
+    return ::protobuf_hal_5fproto_2eproto::file_level_metadata[kIndexInFileMessages];
 }
-void HalSktCtrlPacket::InternalSwap(HalSktCtrlPacket* other) {
-  using std::swap;
-  payload_.Swap(&other->payload_, &::google::protobuf::internal::GetEmptyStringAlreadyInited(),
-    GetArenaNoVirtual());
-  swap(ctrl_word_, other->ctrl_word_);
-  swap(type_, other->type_);
-  _internal_metadata_.Swap(&other->_internal_metadata_);
-}
-
-::google::protobuf::Metadata HalSktCtrlPacket::GetMetadata() const {
-  protobuf_hal_5fproto_2eproto::protobuf_AssignDescriptorsOnce();
-  return ::protobuf_hal_5fproto_2eproto::file_level_metadata[kIndexInFileMessages];
-}
-
 
 // ===================================================================
 
-void HalSktDataPacket::InitAsDefaultInstance() {
-}
+void HalSktDataPacket::InitAsDefaultInstance() {}
 #if !defined(_MSC_VER) || _MSC_VER >= 1900
 const int HalSktDataPacket::kDataFieldNumber;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 
-HalSktDataPacket::HalSktDataPacket()
-  : ::google::protobuf::Message(), _internal_metadata_(NULL) {
-  ::google::protobuf::internal::InitSCC(
-      &protobuf_hal_5fproto_2eproto::scc_info_HalSktDataPacket.base);
-  SharedCtor();
-  // @@protoc_insertion_point(constructor:proto_hal.HalSktDataPacket)
+HalSktDataPacket::HalSktDataPacket() : ::google::protobuf::Message(), _internal_metadata_(NULL)
+{
+    ::google::protobuf::internal::InitSCC(&protobuf_hal_5fproto_2eproto::scc_info_HalSktDataPacket.base);
+    SharedCtor();
+    // @@protoc_insertion_point(constructor:proto_hal.HalSktDataPacket)
 }
 HalSktDataPacket::HalSktDataPacket(const HalSktDataPacket& from)
-  : ::google::protobuf::Message(),
-      _internal_metadata_(NULL) {
-  _internal_metadata_.MergeFrom(from._internal_metadata_);
-  data_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  if (from.data().size() > 0) {
-    data_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.data_);
-  }
-  // @@protoc_insertion_point(copy_constructor:proto_hal.HalSktDataPacket)
-}
-
-void HalSktDataPacket::SharedCtor() {
-  data_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-}
-
-HalSktDataPacket::~HalSktDataPacket() {
-  // @@protoc_insertion_point(destructor:proto_hal.HalSktDataPacket)
-  SharedDtor();
-}
-
-void HalSktDataPacket::SharedDtor() {
-  data_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-}
-
-void HalSktDataPacket::SetCachedSize(int size) const {
-  _cached_size_.Set(size);
-}
-const ::google::protobuf::Descriptor* HalSktDataPacket::descriptor() {
-  ::protobuf_hal_5fproto_2eproto::protobuf_AssignDescriptorsOnce();
-  return ::protobuf_hal_5fproto_2eproto::file_level_metadata[kIndexInFileMessages].descriptor;
-}
-
-const HalSktDataPacket& HalSktDataPacket::default_instance() {
-  ::google::protobuf::internal::InitSCC(&protobuf_hal_5fproto_2eproto::scc_info_HalSktDataPacket.base);
-  return *internal_default_instance();
-}
-
-
-void HalSktDataPacket::Clear() {
-// @@protoc_insertion_point(message_clear_start:proto_hal.HalSktDataPacket)
-  ::google::protobuf::uint32 cached_has_bits = 0;
-  // Prevent compiler warnings about cached_has_bits being unused
-  (void) cached_has_bits;
-
-  data_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  _internal_metadata_.Clear();
-}
-
-bool HalSktDataPacket::MergePartialFromCodedStream(
-    ::google::protobuf::io::CodedInputStream* input) {
-#define DO_(EXPRESSION) if (!GOOGLE_PREDICT_TRUE(EXPRESSION)) goto failure
-  ::google::protobuf::uint32 tag;
-  // @@protoc_insertion_point(parse_start:proto_hal.HalSktDataPacket)
-  for (;;) {
-    ::std::pair<::google::protobuf::uint32, bool> p = input->ReadTagWithCutoffNoLastTag(127u);
-    tag = p.first;
-    if (!p.second) goto handle_unusual;
-    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // bytes data = 1;
-      case 1: {
-        if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(10u /* 10 & 0xFF */)) {
-          DO_(::google::protobuf::internal::WireFormatLite::ReadBytes(
-                input, this->mutable_data()));
-        } else {
-          goto handle_unusual;
-        }
-        break;
-      }
-
-      default: {
-      handle_unusual:
-        if (tag == 0) {
-          goto success;
-        }
-        DO_(::google::protobuf::internal::WireFormat::SkipField(
-              input, tag, _internal_metadata_.mutable_unknown_fields()));
-        break;
-      }
+    : ::google::protobuf::Message(), _internal_metadata_(NULL)
+{
+    _internal_metadata_.MergeFrom(from._internal_metadata_);
+    data_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    if (from.data().size() > 0)
+    {
+        data_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.data_);
     }
-  }
+    // @@protoc_insertion_point(copy_constructor:proto_hal.HalSktDataPacket)
+}
+
+void HalSktDataPacket::SharedCtor()
+{
+    data_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+
+HalSktDataPacket::~HalSktDataPacket()
+{
+    // @@protoc_insertion_point(destructor:proto_hal.HalSktDataPacket)
+    SharedDtor();
+}
+
+void HalSktDataPacket::SharedDtor()
+{
+    data_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+
+void HalSktDataPacket::SetCachedSize(int size) const { _cached_size_.Set(size); }
+const ::google::protobuf::Descriptor* HalSktDataPacket::descriptor()
+{
+    ::protobuf_hal_5fproto_2eproto::protobuf_AssignDescriptorsOnce();
+    return ::protobuf_hal_5fproto_2eproto::file_level_metadata[kIndexInFileMessages].descriptor;
+}
+
+const HalSktDataPacket& HalSktDataPacket::default_instance()
+{
+    ::google::protobuf::internal::InitSCC(&protobuf_hal_5fproto_2eproto::scc_info_HalSktDataPacket.base);
+    return *internal_default_instance();
+}
+
+void HalSktDataPacket::Clear()
+{
+    // @@protoc_insertion_point(message_clear_start:proto_hal.HalSktDataPacket)
+    ::google::protobuf::uint32 cached_has_bits = 0;
+    // Prevent compiler warnings about cached_has_bits being unused
+    (void)cached_has_bits;
+
+    data_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    _internal_metadata_.Clear();
+}
+
+bool HalSktDataPacket::MergePartialFromCodedStream(::google::protobuf::io::CodedInputStream* input)
+{
+#define DO_(EXPRESSION) \
+    if (!GOOGLE_PREDICT_TRUE(EXPRESSION)) goto failure
+    ::google::protobuf::uint32 tag;
+    // @@protoc_insertion_point(parse_start:proto_hal.HalSktDataPacket)
+    for (;;)
+    {
+        ::std::pair<::google::protobuf::uint32, bool> p = input->ReadTagWithCutoffNoLastTag(127u);
+        tag = p.first;
+        if (!p.second) goto handle_unusual;
+        switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag))
+        {
+            // bytes data = 1;
+            case 1: {
+                if (static_cast<::google::protobuf::uint8>(tag) ==
+                    static_cast<::google::protobuf::uint8>(10u /* 10 & 0xFF */))
+                {
+                    DO_(::google::protobuf::internal::WireFormatLite::ReadBytes(input, this->mutable_data()));
+                }
+                else
+                {
+                    goto handle_unusual;
+                }
+                break;
+            }
+
+            default: {
+            handle_unusual:
+                if (tag == 0)
+                {
+                    goto success;
+                }
+                DO_(::google::protobuf::internal::WireFormat::SkipField(input, tag,
+                                                                        _internal_metadata_.mutable_unknown_fields()));
+                break;
+            }
+        }
+    }
 success:
-  // @@protoc_insertion_point(parse_success:proto_hal.HalSktDataPacket)
-  return true;
+    // @@protoc_insertion_point(parse_success:proto_hal.HalSktDataPacket)
+    return true;
 failure:
-  // @@protoc_insertion_point(parse_failure:proto_hal.HalSktDataPacket)
-  return false;
+    // @@protoc_insertion_point(parse_failure:proto_hal.HalSktDataPacket)
+    return false;
 #undef DO_
 }
 
-void HalSktDataPacket::SerializeWithCachedSizes(
-    ::google::protobuf::io::CodedOutputStream* output) const {
-  // @@protoc_insertion_point(serialize_start:proto_hal.HalSktDataPacket)
-  ::google::protobuf::uint32 cached_has_bits = 0;
-  (void) cached_has_bits;
+void HalSktDataPacket::SerializeWithCachedSizes(::google::protobuf::io::CodedOutputStream* output) const
+{
+    // @@protoc_insertion_point(serialize_start:proto_hal.HalSktDataPacket)
+    ::google::protobuf::uint32 cached_has_bits = 0;
+    (void)cached_has_bits;
 
-  // bytes data = 1;
-  if (this->data().size() > 0) {
-    ::google::protobuf::internal::WireFormatLite::WriteBytesMaybeAliased(
-      1, this->data(), output);
-  }
+    // bytes data = 1;
+    if (this->data().size() > 0)
+    {
+        ::google::protobuf::internal::WireFormatLite::WriteBytesMaybeAliased(1, this->data(), output);
+    }
 
-  if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
-    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
-        (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()), output);
-  }
-  // @@protoc_insertion_point(serialize_end:proto_hal.HalSktDataPacket)
+    if ((_internal_metadata_.have_unknown_fields() && ::google::protobuf::internal::GetProto3PreserveUnknownsDefault()))
+    {
+        ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
+            (::google::protobuf::internal::GetProto3PreserveUnknownsDefault() ? _internal_metadata_.unknown_fields()
+                                                                              : _internal_metadata_.default_instance()),
+            output);
+    }
+    // @@protoc_insertion_point(serialize_end:proto_hal.HalSktDataPacket)
 }
 
 ::google::protobuf::uint8* HalSktDataPacket::InternalSerializeWithCachedSizesToArray(
-    bool deterministic, ::google::protobuf::uint8* target) const {
-  (void)deterministic; // Unused
-  // @@protoc_insertion_point(serialize_to_array_start:proto_hal.HalSktDataPacket)
-  ::google::protobuf::uint32 cached_has_bits = 0;
-  (void) cached_has_bits;
+    bool deterministic, ::google::protobuf::uint8* target) const
+{
+    (void)deterministic;  // Unused
+    // @@protoc_insertion_point(serialize_to_array_start:proto_hal.HalSktDataPacket)
+    ::google::protobuf::uint32 cached_has_bits = 0;
+    (void)cached_has_bits;
 
-  // bytes data = 1;
-  if (this->data().size() > 0) {
-    target =
-      ::google::protobuf::internal::WireFormatLite::WriteBytesToArray(
-        1, this->data(), target);
-  }
+    // bytes data = 1;
+    if (this->data().size() > 0)
+    {
+        target = ::google::protobuf::internal::WireFormatLite::WriteBytesToArray(1, this->data(), target);
+    }
 
-  if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
-    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
-        (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()), target);
-  }
-  // @@protoc_insertion_point(serialize_to_array_end:proto_hal.HalSktDataPacket)
-  return target;
+    if ((_internal_metadata_.have_unknown_fields() && ::google::protobuf::internal::GetProto3PreserveUnknownsDefault()))
+    {
+        target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
+            (::google::protobuf::internal::GetProto3PreserveUnknownsDefault() ? _internal_metadata_.unknown_fields()
+                                                                              : _internal_metadata_.default_instance()),
+            target);
+    }
+    // @@protoc_insertion_point(serialize_to_array_end:proto_hal.HalSktDataPacket)
+    return target;
 }
 
-size_t HalSktDataPacket::ByteSizeLong() const {
-// @@protoc_insertion_point(message_byte_size_start:proto_hal.HalSktDataPacket)
-  size_t total_size = 0;
+size_t HalSktDataPacket::ByteSizeLong() const
+{
+    // @@protoc_insertion_point(message_byte_size_start:proto_hal.HalSktDataPacket)
+    size_t total_size = 0;
 
-  if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
-    total_size +=
-      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
-        (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()));
-  }
-  // bytes data = 1;
-  if (this->data().size() > 0) {
-    total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::BytesSize(
-        this->data());
-  }
+    if ((_internal_metadata_.have_unknown_fields() && ::google::protobuf::internal::GetProto3PreserveUnknownsDefault()))
+    {
+        total_size += ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize((
+            ::google::protobuf::internal::GetProto3PreserveUnknownsDefault() ? _internal_metadata_.unknown_fields()
+                                                                             : _internal_metadata_.default_instance()));
+    }
+    // bytes data = 1;
+    if (this->data().size() > 0)
+    {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::BytesSize(this->data());
+    }
 
-  int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
-  SetCachedSize(cached_size);
-  return total_size;
+    int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
+    SetCachedSize(cached_size);
+    return total_size;
 }
 
-void HalSktDataPacket::MergeFrom(const ::google::protobuf::Message& from) {
-// @@protoc_insertion_point(generalized_merge_from_start:proto_hal.HalSktDataPacket)
-  GOOGLE_DCHECK_NE(&from, this);
-  const HalSktDataPacket* source =
-      ::google::protobuf::internal::DynamicCastToGenerated<const HalSktDataPacket>(
-          &from);
-  if (source == NULL) {
-  // @@protoc_insertion_point(generalized_merge_from_cast_fail:proto_hal.HalSktDataPacket)
-    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
-  } else {
-  // @@protoc_insertion_point(generalized_merge_from_cast_success:proto_hal.HalSktDataPacket)
-    MergeFrom(*source);
-  }
+void HalSktDataPacket::MergeFrom(const ::google::protobuf::Message& from)
+{
+    // @@protoc_insertion_point(generalized_merge_from_start:proto_hal.HalSktDataPacket)
+    GOOGLE_DCHECK_NE(&from, this);
+    const HalSktDataPacket* source =
+        ::google::protobuf::internal::DynamicCastToGenerated<const HalSktDataPacket>(&from);
+    if (source == NULL)
+    {
+        // @@protoc_insertion_point(generalized_merge_from_cast_fail:proto_hal.HalSktDataPacket)
+        ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+    }
+    else
+    {
+        // @@protoc_insertion_point(generalized_merge_from_cast_success:proto_hal.HalSktDataPacket)
+        MergeFrom(*source);
+    }
 }
 
-void HalSktDataPacket::MergeFrom(const HalSktDataPacket& from) {
-// @@protoc_insertion_point(class_specific_merge_from_start:proto_hal.HalSktDataPacket)
-  GOOGLE_DCHECK_NE(&from, this);
-  _internal_metadata_.MergeFrom(from._internal_metadata_);
-  ::google::protobuf::uint32 cached_has_bits = 0;
-  (void) cached_has_bits;
+void HalSktDataPacket::MergeFrom(const HalSktDataPacket& from)
+{
+    // @@protoc_insertion_point(class_specific_merge_from_start:proto_hal.HalSktDataPacket)
+    GOOGLE_DCHECK_NE(&from, this);
+    _internal_metadata_.MergeFrom(from._internal_metadata_);
+    ::google::protobuf::uint32 cached_has_bits = 0;
+    (void)cached_has_bits;
 
-  if (from.data().size() > 0) {
-
-    data_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.data_);
-  }
+    if (from.data().size() > 0)
+    {
+        data_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.data_);
+    }
 }
 
-void HalSktDataPacket::CopyFrom(const ::google::protobuf::Message& from) {
-// @@protoc_insertion_point(generalized_copy_from_start:proto_hal.HalSktDataPacket)
-  if (&from == this) return;
-  Clear();
-  MergeFrom(from);
+void HalSktDataPacket::CopyFrom(const ::google::protobuf::Message& from)
+{
+    // @@protoc_insertion_point(generalized_copy_from_start:proto_hal.HalSktDataPacket)
+    if (&from == this) return;
+    Clear();
+    MergeFrom(from);
 }
 
-void HalSktDataPacket::CopyFrom(const HalSktDataPacket& from) {
-// @@protoc_insertion_point(class_specific_copy_from_start:proto_hal.HalSktDataPacket)
-  if (&from == this) return;
-  Clear();
-  MergeFrom(from);
+void HalSktDataPacket::CopyFrom(const HalSktDataPacket& from)
+{
+    // @@protoc_insertion_point(class_specific_copy_from_start:proto_hal.HalSktDataPacket)
+    if (&from == this) return;
+    Clear();
+    MergeFrom(from);
 }
 
-bool HalSktDataPacket::IsInitialized() const {
-  return true;
+bool HalSktDataPacket::IsInitialized() const { return true; }
+
+void HalSktDataPacket::Swap(HalSktDataPacket* other)
+{
+    if (other == this) return;
+    InternalSwap(other);
+}
+void HalSktDataPacket::InternalSwap(HalSktDataPacket* other)
+{
+    using std::swap;
+    data_.Swap(&other->data_, &::google::protobuf::internal::GetEmptyStringAlreadyInited(), GetArenaNoVirtual());
+    _internal_metadata_.Swap(&other->_internal_metadata_);
 }
 
-void HalSktDataPacket::Swap(HalSktDataPacket* other) {
-  if (other == this) return;
-  InternalSwap(other);
+::google::protobuf::Metadata HalSktDataPacket::GetMetadata() const
+{
+    protobuf_hal_5fproto_2eproto::protobuf_AssignDescriptorsOnce();
+    return ::protobuf_hal_5fproto_2eproto::file_level_metadata[kIndexInFileMessages];
 }
-void HalSktDataPacket::InternalSwap(HalSktDataPacket* other) {
-  using std::swap;
-  data_.Swap(&other->data_, &::google::protobuf::internal::GetEmptyStringAlreadyInited(),
-    GetArenaNoVirtual());
-  _internal_metadata_.Swap(&other->_internal_metadata_);
-}
-
-::google::protobuf::Metadata HalSktDataPacket::GetMetadata() const {
-  protobuf_hal_5fproto_2eproto::protobuf_AssignDescriptorsOnce();
-  return ::protobuf_hal_5fproto_2eproto::file_level_metadata[kIndexInFileMessages];
-}
-
 
 // @@protoc_insertion_point(namespace_scope)
 }  // namespace proto_hal
-namespace google {
-namespace protobuf {
-template<> GOOGLE_PROTOBUF_ATTRIBUTE_NOINLINE ::proto_hal::HalSktCtrlPacket* Arena::CreateMaybeMessage< ::proto_hal::HalSktCtrlPacket >(Arena* arena) {
-  return Arena::CreateInternal< ::proto_hal::HalSktCtrlPacket >(arena);
+namespace google
+{
+namespace protobuf
+{
+template <>
+GOOGLE_PROTOBUF_ATTRIBUTE_NOINLINE ::proto_hal::HalSktCtrlPacket*
+Arena::CreateMaybeMessage<::proto_hal::HalSktCtrlPacket>(Arena* arena)
+{
+    return Arena::CreateInternal<::proto_hal::HalSktCtrlPacket>(arena);
 }
-template<> GOOGLE_PROTOBUF_ATTRIBUTE_NOINLINE ::proto_hal::HalSktDataPacket* Arena::CreateMaybeMessage< ::proto_hal::HalSktDataPacket >(Arena* arena) {
-  return Arena::CreateInternal< ::proto_hal::HalSktDataPacket >(arena);
+template <>
+GOOGLE_PROTOBUF_ATTRIBUTE_NOINLINE ::proto_hal::HalSktDataPacket*
+Arena::CreateMaybeMessage<::proto_hal::HalSktDataPacket>(Arena* arena)
+{
+    return Arena::CreateInternal<::proto_hal::HalSktDataPacket>(arena);
 }
 }  // namespace protobuf
 }  // namespace google

@@ -13,7 +13,7 @@ using json = nlohmann::json;
 
 namespace dp
 {
-#define DumpInfo(name) DP_LOG(INFO) << #name << ": " << name
+#define DumpInfo(name) std::cout << #name << ": " << name << std::endl;
 #if !defined(CONFIG_DATABASE_SAVE_AS_DICT)
 #define JsonKeySet(key) j_chip_info[#key] = info.key
 #else

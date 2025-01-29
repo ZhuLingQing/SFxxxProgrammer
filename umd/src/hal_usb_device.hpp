@@ -27,13 +27,6 @@ namespace dp
 class HalUsbDevice : public ProgrammerHal
 {
    public:
-    enum vendor_request_function_e
-    {
-        kVendorFuncDevice = 0x40,
-        kVendorFuncInterface = 0x41,
-        kVendorFuncEndpoint = 0x42,
-        kVendorFuncOther = 0x43
-    };
     HalUsbDevice(libusb_device *device) : ProgrammerHal(), device_(device), handle_(nullptr) {}
     int Open() override
     {
@@ -121,6 +114,7 @@ class HalUsbDevice : public ProgrammerHal
         }
         return n_access;
     }
+
    private:
     int FindBulkEndpoints()
     {
