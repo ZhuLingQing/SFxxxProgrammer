@@ -116,8 +116,7 @@ DpError ProgrammerInterface::PowerOff(DevPowerChan chan)
 DpError ProgrammerInterface::setPowerConfig(DevPowerChan chan, int mvolt)
 {
     assert(chan < kPowerChanMax);
-    auto x = power_vcc_map_.find(mvolt);
-    if (x == power_vcc_map_.end()) return kInvalidParam;
+    if (0 == power_vcc_map_.count(mvolt)) return kInvalidParam;
     power_val_[chan] = mvolt;
     return kSc;
 }
@@ -134,8 +133,7 @@ DpError ProgrammerInterface::setLED(programmer_led_e led_state) {}
 
 DpError ProgrammerInterface::setBusClock(int freq)
 {
-    auto x = bus_clock_map_.find(freq);
-    if (x == bus_clock_map_.end()) return kInvalidParam;
+    if (0 == bus_clock_map_.count(freq)) return kInvalidParam;
     bus_clock_ = freq;
     return hal_->Control((uint8_t)ProgrammerHal::kVendorFuncEndpoint, (uint8_t)kReqEpSetSpiClock, x->second, 0)
                ? kDevErr
@@ -210,7 +208,7 @@ DpError ProgrammerInterface::ReadDeviceInfo()
         return kDevErr;
     // get prog type
     prog_name_.assign(data, data + 8);
-    if (prog_type_map_.find(prog_name_) == prog_type_map_.end())
+    if (0 == prog_type_map_.count(prog_name_))
     {
         prog_type_ = kProgUnknown;
         return kUnsupported;

@@ -21,7 +21,7 @@ namespace dp
 #endif
 #define JsonKeyGetRaw(key, type) info.key = chip.at(#key).get<type>()
 #define JsonKeyGet(key, default_value, type) \
-    info.key = (chip.find(#key) == chip.end()) ? default_value : Convert##type(chip.at(#key).get<std::string>());
+    info.key = (0 == chip.count(#key)) ? default_value : Convert##type(chip.at(#key).get<std::string>());
 
 void database_info_t::Dump() const
 {
@@ -42,12 +42,13 @@ FlashDatabase &FlashDatabase::getInstance(const std::string filename)
     if (!instance.isLoaded()) instance.ReLoad(filename);
     return instance;
 }
-const FlashInfo *FlashDatabase::getFlashInfo(const std::string &name)
+const FlashInfo *FlashDatabase::getFlashInfo(const char *name)
 {
     auto info = flash_info_map_.find(name);
     if (info == flash_info_map_.end()) return nullptr;
     return &info->second;
 }
+const FlashInfo *FlashDatabase::getFlashInfo(const std::string &name) { return getFlashInfo(name.c_str()); }
 DpError FlashDatabase::ReLoad(const std::string &filename)
 {
     DP_LOG(INFO) << __PRETTY_FUNCTION__;
@@ -62,7 +63,7 @@ DpError FlashDatabase::ReLoad(const std::string &filename)
     database_info_.CreateDate = database.at("CreateDate").get<std::string>();
     database_info_.Locale = database.at("Locale").get<std::string>();
     database_info_.PortofolioDescription = database["Portofolio"].at("Description").get<std::string>();
-    database_info_.NewDb = (database.find("NewDb") == database.end()) ? false : database.at("NewDb").get<bool>();
+    database_info_.NewDb = (0 == database.count("NewDb")) ? false : database.at("NewDb").get<bool>();
     database_info_.Dump();
 
     auto chip_list = database["Portofolio"].at("Chip");
@@ -72,7 +73,7 @@ DpError FlashDatabase::ReLoad(const std::string &filename)
         struct flash_info_t info;
         // DP_LOG(INFO) << "Chip: " << chip.at("TypeName").get<std::string>(); //
         // for debugging
-        if (flash_info_map_.find(chip.at("TypeName").get<std::string>()) != flash_info_map_.end())
+        if (flash_info_map_.count(chip.at("TypeName").get<std::string>()))
         {
             DP_LOG(WARNING) << "Duplicate chip: " << chip.at("TypeName").get<std::string>();
             continue;
@@ -135,9 +136,9 @@ DpError FlashDatabase::ReLoad(const std::string &filename)
             JsonKeyGet(DeviceID, 0, Uint32);
 
             JsonKeyGet(ChipSizeInKByte, 0, Uint32);
-            if (chip.find("SectorSizeInByte") != chip.end())
+            if (chip.count("SectorSizeInByte"))
                 info.SectorSizeInByte = ConvertUint32(chip.at("SectorSizeInByte").get<std::string>());
-            else if (chip.find("BlockSizeInByte") != chip.end())
+            else if (chip.count("BlockSizeInByte"))
                 info.SectorSizeInByte = ConvertUint32(chip.at("BlockSizeInByte").get<std::string>());
             else
                 DP_LOG(WARNING) << info.TypeName << ": @SectorSizeInByte or @BlockSizeInByte not found";

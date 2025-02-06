@@ -36,6 +36,7 @@ class FlashDatabase
     bool isLoaded() const { return flash_info_map_.size() ? true : false; }
     size_t getCount() const { return flash_info_map_.size(); }
     const FlashInfo *getFlashInfo(const std::string &name);
+    const FlashInfo *getFlashInfo(const char *name);
     std::set<std::pair<uint32_t, uint32_t>> getReadIdInfoList();
     std::set<uint32_t> getPowerVddList();
     DpError getFlashNameList(const std::pair<uint32_t, uint32_t> &readid, uint32_t power, uint32_t id,
