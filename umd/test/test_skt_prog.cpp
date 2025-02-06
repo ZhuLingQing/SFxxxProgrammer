@@ -10,10 +10,10 @@
 #include <cstdlib>  // 包含getenv函数
 #include <iostream>
 
-#include "hal_skt_device.hpp"
 #include "dummy_programmer.hpp"
 #include "flash_database.hpp"
 #include "flash_interface.hpp"
+#include "hal_skt_device.hpp"
 #include "programmer_interface.hpp"
 
 #include "dp_logging.hpp"

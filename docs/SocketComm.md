@@ -1,0 +1,45 @@
+# SocketComm
+## Specification
+- file: hal_proto.pb.h
+- PacketType:
+    - 0x00: kCtrlOut
+    - 0x01: kCtrlIn
+    - 0x02: kBulkOut
+    - 0x03: kBulkIn
+    - 0x04: kShutdown
+- CommSequence:
+    - client -> server (ctrl)
+        - client::ProtoSendCtrl(kCtrlOut)
+        - server::ProtoReadCtrl() == kCtrlOut
+        - server::execution()
+    - server -> client (ctrl)
+        - client::ProtoSendCtrl(kCtrlIn)
+        - client::ProtoReadCtrl(kCtrlIn)
+        - client::execution()
+        - server::ProtoReadCtrl() == kCtrlIn
+        - server::execution()
+        - server::ProtoSendCtrl(kCtrlIn)
+    - client -> server (bulk)
+        - client::ProtoSendCtrl(kBulkOut)
+        - client::ProtoSendData()
+        - server::ProtoReadCtrl() == kCtrlOut
+        - server::ProtoReadData()
+        - server::execution()
+    - server -> client (bulk)
+        - client::ProtoSendCtrl(kBulkIn)
+        - client::ProtoReadData()
+        - client::execution()
+        - server::ProtoReadCtrl() = kBulkIn
+        - server::execution()
+        - client::ProtoSendData()
+## client
+- file: hal_skt_device.hpp
+- function:
+    - dp::HalSktDevice::ProtoSendCtrl()
+    - dp::HalSktDevice::ProtoReadCtrl()
+    - dp::HalSktDevice::ProtoSendData()
+    - dp::HalSktDevice::ProtoReadData()
+## server
+- file: socket_sim_flash.hpp and socket_sim_flash.cpp
+- function:
+    - dp::SocketSimFlash::ProtoReadCtrl()

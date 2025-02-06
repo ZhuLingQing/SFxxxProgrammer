@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "dp_error.h"
+#include "dp_spi_flash_command_set.h"
 #include "dp_type.h"
 
 namespace dp
@@ -95,48 +96,6 @@ class FlashInterface
 class FlashInterface25 : public FlashInterface
 {
    public:
-    enum flash25_cmd_e
-    {
-        kCmdWriteEnable = 0x06,
-        kCmdWriteDisable = 0x04,
-        kCmdReadStatus = 0x05,
-        kCmdWriteStatus = 0x01,
-        kCmdReadData = 0x03,
-        kCmdFastReadData = 0x0B,
-        // kCmdFastReadDual = 0x3B,
-        // kCmdFastReadDualIo = 0xBB,
-        kCmdPageProgram = 0x02,
-        kCmdBlockErase = 0xD8,
-        // kCmdSectorErase = 0x20,
-        kCmdChipErase = 0xC7,
-        kCmdPowerDown = 0xB9,
-        kCmdReleasePowerDown = 0xAB,
-        kCmdReadSignature = 0xAB,
-        // kCmdManufacturerId = 0x90,
-        kCmdJedecId = 0x9F,
-        // kCmdUniqueId = 0x4B,
-        // kCmdReadUID = 0x4B,
-        // kCmdReadParameter = 0x58,
-        // kCmdReadSecurityRegister = 0x48,
-        // kCmdProgramSecurityRegister = 0x42,
-        // kCmdReadLock = 0xE8,
-        kCmdReadSecurityRegister = 0x2B,
-        kCmdEnter4BitMode = 0xB7,
-        kCmdExit4BitMode = 0xE9,
-    };
-    enum flash25_status_e
-    {
-        kStatusWIP = 0x01,
-        kStatusWEL = 0x02,
-        kStatusBP0 = 0x04,
-        kStatusBP1 = 0x08,
-        kStatusBP2 = 0x10,
-        kStatusBP3 = 0x20,
-        kStatusWP = 0x40,
-        kStatusWPEnable = 0x80,
-
-        kStatusBP = 0x9C,
-    };
     [[nodiscard]] DpError ChipErase() override;
     [[nodiscard]] DpError BlockErase(uint32_t block_index, size_t count = 1) override;
     [[nodiscard]] DpError PageProgram(uint32_t page_index, const void *buf, size_t size) override;

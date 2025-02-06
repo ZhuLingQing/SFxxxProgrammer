@@ -22,12 +22,6 @@ class ProgrammerHal
         kReqDirectionOut = 0,
         kReqDirectionIn = 1,
     };
-    enum request_e
-    {
-        kReqTransceive = 1,
-        kReqPowerVpp = 3,
-        kReqPowerVcc = 9,
-    };
     ProgrammerHal() : kBulkSize_(CONFIG_BULK_BUFFER_SIZE) {}
     virtual int Open(void) { return 0; }
     virtual void Close(void) {}

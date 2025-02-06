@@ -15,17 +15,36 @@
 
 namespace dp
 {
+struct ctrl_t
+{
+    uint8_t request_type;
+    uint8_t request;
+    uint16_t value;
+    uint16_t index;
+    uint16_t size;
+};
+class hal_ctrl
+{
+   public:
+    hal_ctrl(uint64_t ctrl) : ctrl_(ctrl) {}
+    uint64_t ctrl() const { return ctrl_; }
+    uint8_t request_type() const { return ctrl_ >> 56; }
+    uint8_t request() const { return ctrl_ >> 48; }
+    uint16_t value() const { return ctrl_ >> 32; }
+    uint16_t index() const { return ctrl_ >> 16; }
+    uint16_t size() const { return ctrl_ >> 0; }
+    static inline uint64_t to_ctrl(ctrl_t ctrl)
+    {
+        return (((uint64_t)ctrl.request_type << 56) | ((uint64_t)ctrl.request << 48) | ((uint64_t)ctrl.value << 32) |
+                ((uint64_t)ctrl.index << 16) | ((uint64_t)ctrl.size & 0xFFFF));
+    }
+
+   private:
+    uint64_t ctrl_;
+};
 class HalSktDevice : public ProgrammerHal
 {
    public:
-    struct ctrl_t
-    {
-        uint8_t request_type;
-        uint8_t request;
-        uint16_t value;
-        uint16_t index;
-        uint16_t size;
-    };
     HalSktDevice(std::string &ip, int port = 8080) : ProgrammerHal(), ip_(ip), port_(port), fd_(-1) {}
     int Open() override
     {
@@ -62,7 +81,12 @@ class HalSktDevice : public ProgrammerHal
     int Control(uint8_t request_type, uint8_t request, uint16_t value, uint16_t index,
                 uint32_t timeout = CONFIG_DEFAULT_TIMEOUT) override
     {
-        return ControlOut(request_type, request, value, index, nullptr, 0, timeout);
+        assert(fd_ != -1);
+        proto_hal::HalSktCtrlPacket pkt;
+        pkt.set_type(proto_hal::kCtrlIn);
+        pkt.set_ctrl_word(hal_ctrl::to_ctrl({request_type, request, value, index, 0}));
+
+        return ProtoSendCtrl(pkt);
     }
     int ControlOut(uint8_t request_type, uint8_t request, uint16_t value, uint16_t index, void *buf, uint32_t size,
                    uint32_t timeout = CONFIG_DEFAULT_TIMEOUT) override
@@ -70,11 +94,11 @@ class HalSktDevice : public ProgrammerHal
         assert(fd_ != -1);
         proto_hal::HalSktCtrlPacket pkt;
         pkt.set_type(proto_hal::kCtrlOut);
-        pkt.set_ctrl_word(to_ctrl({request_type, request, value, index, (uint16_t)size}));
+        pkt.set_ctrl_word(hal_ctrl::to_ctrl({request_type, request, value, index, (uint16_t)size}));
         if (buf && size)
         {
             std::string byte_string;
-            byte_string.assign(reinterpret_cast<uint8_t*>(buf), reinterpret_cast<uint8_t*>(buf) + size);
+            byte_string.assign(reinterpret_cast<uint8_t *>(buf), reinterpret_cast<uint8_t *>(buf) + size);
             pkt.set_payload(byte_string);
         }
 
@@ -87,9 +111,10 @@ class HalSktDevice : public ProgrammerHal
         assert(fd_ != -1);
         proto_hal::HalSktCtrlPacket pkt;
         pkt.set_type(proto_hal::kCtrlIn);
-        pkt.set_ctrl_word(to_ctrl({request_type, request, value, index, (uint16_t)size}));
+        pkt.set_ctrl_word(hal_ctrl::to_ctrl({request_type, request, value, index, (uint16_t)size}));
         if ((r = ProtoSendCtrl(pkt)) < 0) return r;
 
+        if (size == 0) return 0;
         if ((r = ProtoReadCtrl(pkt)) < 0) return r;
         if (pkt.type() != proto_hal::kCtrlIn) return -2;
         if (buf && size)
@@ -141,11 +166,6 @@ class HalSktDevice : public ProgrammerHal
     }
 
    private:
-    static uint64_t to_ctrl(ctrl_t ctrl)
-    {
-        return (((uint64_t)ctrl.request_type << 56) | ((uint64_t)ctrl.request << 48) | ((uint64_t)ctrl.value << 32) |
-                ((uint64_t)ctrl.index << 16) | ((uint64_t)ctrl.size & 0xFFFF));
-    }
     int ProtoSendCtrl(proto_hal::HalSktCtrlPacket &pkt)
     {
         std::string serializedData;

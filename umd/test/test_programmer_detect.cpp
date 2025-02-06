@@ -28,7 +28,7 @@ int main(int argc, char* argv[])
     std::shared_ptr<dp::ProgrammerInterface> interface = std::make_shared<dp::DummyProgInterface>(hal);
     std::unique_ptr<dp::DummyProgrammer> prog =
         std::make_unique<dp::DummyProgrammer>(argc > 1 ? argv[1] : "", interface);
-        
+
     std::set<std::string> flash_name_list;
     auto r = prog->Detect(flash_name_list);
     if (kSc != r)
