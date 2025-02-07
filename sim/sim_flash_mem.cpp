@@ -11,20 +11,18 @@ namespace sim
 // WREN(0x06), WRDI(0x04), RDSR(0x05), WRSR(0x01), READ(0x03), FAST_READ(0x0B), PP(0x02), SE(0xD8), BE(0xC7),
 // DP(0xB9), RDP(0xAB),
 
-const long SimSpiFlash::kPageProgramMs_ = CONFIG_PAGE_PROGRAM_MS;
-const long SimSpiFlash::kSectorEraseMs_ = CONFIG_SECTOR_ERASE_MS;
-const long SimSpiFlash::kChipEraseMs_ = CONFIG_CHIP_ERASE_MS;
+const long SimFlash::kPageProgramMs_ = CONFIG_PAGE_PROGRAM_MS;
+const long SimFlash::kSectorEraseMs_ = CONFIG_SECTOR_ERASE_MS;
+const long SimFlash::kChipEraseMs_ = CONFIG_CHIP_ERASE_MS;
 
-const size_t SimM25Pxx::kMaxIdCount_ = 16;
-
-SimM25Pxx::SimM25Pxx(const dp::FlashInfo *info) : SimFlashMem<uint8_t, 256>(info)
+SimM25Pxx::SimM25Pxx(const dp::FlashInfo *info) : SimFlashMem<uint8_t, 0xFF, 256>(info)
 {
-    handle_map_ = {
+    per_byte_map_ = {
         {kCmdJedecId, &SimM25Pxx::HndReadIdentification},     {0x9E, &SimM25Pxx::HndReadIdentification},
         {kCmdReadStatus, &SimM25Pxx::HndReadStatusRegister},  {kCmdReadData, &SimM25Pxx::HndReadData},
         {kCmdFastReadData, &SimM25Pxx::HndReadDataHighSpeed},
     };
-    execution_map_ = {
+    final_map_ = {
         {kCmdWriteEnable, &SimM25Pxx::ExeWriteEnable},
         {kCmdWriteDisable, &SimM25Pxx::ExeWriteDisable},
         {kCmdWriteStatus, &SimM25Pxx::ExeWriteStatusRegister},
@@ -34,8 +32,6 @@ SimM25Pxx::SimM25Pxx(const dp::FlashInfo *info) : SimFlashMem<uint8_t, 256>(info
         {kCmdPowerDown, &SimM25Pxx::ExeDeepPowerDown},
         {kCmdReleasePowerDown, &SimM25Pxx::ExeReleaseDeepPowerDown},
     };
-    id_.push_back(static_cast<uint8_t>(kMaxIdCount_));
-    for (int i = 0; i < kMaxIdCount_; ++i) id_.push_back(static_cast<uint8_t>(i));
 
     uint8_t bp_code = 1;
     uint32_t sector_count = chip_size_ / sector_size_;
@@ -79,24 +75,24 @@ bool SimM25Pxx::isWriteInProgress()
     return false;
 }
 
-uint8_t SimM25Pxx::Handle()
+uint8_t SimM25Pxx::PerByteHandle()
 {
-    auto h = handle_map_.find(cmd_cache_[0]);
-    if (h != handle_map_.end()) return (this->*(h->second))();
+    auto h = per_byte_map_.find(cmd_cache_[0]);
+    if (h != per_byte_map_.end()) return (this->*(h->second))();
     return getDefaultPattern();
 }
 
-int SimM25Pxx::Execution()
+int SimM25Pxx::CsRisingHandle()
 {
     int r = 0;
-    auto e = execution_map_.find(cmd_cache_[0]);
-    if (e != execution_map_.end()) r = (this->*(e->second))();
-    // else if (handle_map_.find(cmd_cache_[0]) == handle_map_.end())
-    else if (0 == handle_map_.count(cmd_cache_[0]))
+    auto e = final_map_.find(cmd_cache_[0]);
+    if (e != final_map_.end()) r = (this->*(e->second))();
+    // else if (per_byte_map_.find(cmd_cache_[0]) == per_byte_map_.end())
+    else if (0 == per_byte_map_.count(cmd_cache_[0]))
     {
-        addMessage("Execution: unimplemented cmd@" + to_hex_string(cmd_cache_[0]));
+        addMessage("CsRisingHandle: unimplemented cmd@" + to_hex_string(cmd_cache_[0]));
     }
-    SimSpiFlash::Dump();
+    SimFlash::Dump();
     return r;
 }
 
@@ -237,7 +233,7 @@ int SimM25Pxx::ExePageProgram()
     page_mem_ = getPage(page_index_);
     std::copy(cmd_cache_.begin() + 1 + addr_width, cmd_cache_.end(), page_mem_.begin() + page_offset_);
     status_reg_.set(kStatusWIP);
-    exe_thread_ = std::thread(&SimM25Pxx::executionPageProgram, this, page_index_);
+    exe_thread_ = std::thread(&SimM25Pxx::asyncPageProgram, this, page_index_);
     return 0;
 }
 
@@ -262,7 +258,7 @@ int SimM25Pxx::ExeSectorErase()
         return -1;
     }
     status_reg_.set(kStatusWIP);
-    exe_thread_ = std::thread(&SimM25Pxx::executionSectorErase, this, address_ / sector_size_);
+    exe_thread_ = std::thread(&SimM25Pxx::asyncSectorErase, this, address_ / sector_size_);
     return 0;
 }
 
@@ -285,7 +281,7 @@ int SimM25Pxx::ExeChipErase()
         return -1;
     }
     status_reg_.set(kStatusWIP);
-    exe_thread_ = std::thread(&SimM25Pxx::executionChipErase, this);
+    exe_thread_ = std::thread(&SimM25Pxx::asyncChipErase, this);
     return 0;
 }
 
@@ -318,7 +314,7 @@ int SimM25Pxx::ExeReleaseDeepPowerDown()
     return 0;
 }
 
-void SimM25Pxx::executionChipErase()
+void SimM25Pxx::asyncChipErase()
 {
     std::this_thread::sleep_for(std::chrono::milliseconds(kPageProgramMs_));
     if (!mem_.empty())
@@ -329,7 +325,7 @@ void SimM25Pxx::executionChipErase()
     status_reg_.clear(kStatusWIP | kStatusWEL);
 }
 
-void SimM25Pxx::executionSectorErase(uint32_t sector_index)
+void SimM25Pxx::asyncSectorErase(uint32_t sector_index)
 {
     std::this_thread::sleep_for(std::chrono::milliseconds(kPageProgramMs_));
     auto sector = mem_.find(sector_index);
@@ -341,14 +337,14 @@ void SimM25Pxx::executionSectorErase(uint32_t sector_index)
     status_reg_.clear(kStatusWIP | kStatusWEL);
 }
 
-void SimM25Pxx::executionPageProgram(uint32_t page_index)
+void SimM25Pxx::asyncPageProgram(uint32_t page_index)
 {
     std::this_thread::sleep_for(std::chrono::milliseconds(kPageProgramMs_));
     if (!isBlankPage(page_mem_)) PageDataReplace(page_index, page_mem_);
     status_reg_.clear(kStatusWIP | kStatusWEL);
 }
 
-SimSpiFlash *SimFlashFactory(const dp::FlashInfo *info)
+SimFlash *SimFlashFactory(const dp::FlashInfo *info)
 {
     if (info->getClass() == dp::kClass_M25Pxx) return new SimM25Pxx(info);
     std::cerr << "SimFlashFactory::" << info->getName() << "::Unsupported class@" << info->getInfo().Class << std::endl;

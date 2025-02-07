@@ -26,13 +26,13 @@ g++ -o $PROJ_DIR/build/$CASE_NAME -std=c++20 \
     -I$PROJ_DIR/umd/inc \
     -I$PROJ_DIR/third-party/plog/include \
     -I$PROJ_DIR/third-party/json/include \
-    -pthread -Og -g
+    -pthread -Og
 if [ $? -ne 0 ]; then
     echo "Compile failed"
     exit 1
 fi
 end=$(date +%s%N)
-echo "Execution time: $(( (end - start) / 1000000 )) milliseconds"
+echo "Build time: $(( (end - start) / 1000000000 )) sec"
 fi
 
 start=$(date +%s%N)
@@ -44,4 +44,4 @@ else
     $PROJ_DIR/build/$CASE_NAME $ARCHIVES/ChipInfoDb_opt.json $1
 fi
 end=$(date +%s%N)
-echo "Execution time: $(( (end - start) / 1000000 )) milliseconds"
+echo "Execution time: $(( (end - start) / 1000000 )) ms"
