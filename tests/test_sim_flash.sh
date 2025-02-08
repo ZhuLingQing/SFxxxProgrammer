@@ -1,10 +1,14 @@
 #!/bin/bash
-CUR_DIR=$(cd $(dirname $0); pwd)
+CUR_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 ARCHIVES=$CUR_DIR/../archives
 PROJ_DIR=$CUR_DIR/..
 CASE_NAME=test_sim_flash
 NEED_BUILD=0
 FLASH_NAME=M25P16
+
+if [ ! -d $PROJ_DIR/build ]; then
+    mkdir $PROJ_DIR/build
+fi
 
 if [ ! -f $PROJ_DIR/build/$CASE_NAME ]; then
     NEED_BUILD=1
@@ -38,10 +42,10 @@ fi
 start=$(date +%s%N)
 
 if [ $NEED_BUILD -eq 1 ]; then
-    echo "execute: $PROJ_DIR/build/$CASE_NAME $ARCHIVES/ChipInfoDb_opt.json $FLASH_NAME"
-    $PROJ_DIR/build/$CASE_NAME $ARCHIVES/ChipInfoDb_opt.json $FLASH_NAME
+    echo "execute: $PROJ_DIR/build/$CASE_NAME $FLASH_NAME"
+    $PROJ_DIR/build/$CASE_NAME $FLASH_NAME
 else
-    $PROJ_DIR/build/$CASE_NAME $ARCHIVES/ChipInfoDb_opt.json $1
+    $PROJ_DIR/build/$CASE_NAME $1
 fi
 end=$(date +%s%N)
 echo "Execution time: $(( (end - start) / 1000000 )) ms"

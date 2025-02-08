@@ -1,5 +1,5 @@
-#ifndef SOCKET_SIM_FLASH_HPP
-#define SOCKET_SIM_FLASH_HPP
+#ifndef SOCKET_SIM_PROG_HPP
+#define SOCKET_SIM_PROG_HPP
 
 #include <array>
 #include <cstdint>
@@ -15,10 +15,10 @@
 
 namespace sim
 {
-class SocketSimFlash
+class SocketSimProg
 {
    public:
-    SocketSimFlash(int port = 8080);
+    SocketSimProg(int port = 8080);
     int run();
 
    private:
@@ -55,10 +55,10 @@ class SocketSimFlash
     static const size_t kBulkSize = CONFIG_BULK_BUFFER_SIZE;
     static const size_t kMaxBufferSize = CONFIG_PROTO_BUFFER_SIZE;
 
-    static std::map<uint8_t, int (SocketSimFlash::*)(uint64_t ctrl)> other_ctrl_map_;
-    static std::map<uint8_t, int (SocketSimFlash::*)(uint64_t ctrl)> endpoint_ctrl_map_;
-};  // class SocketSimFlash
+    static std::map<uint8_t, int (SocketSimProg::*)(uint64_t ctrl)> other_ctrl_map_;
+    static std::map<uint8_t, int (SocketSimProg::*)(uint64_t ctrl)> endpoint_ctrl_map_;
+};  // class SocketSimProg
 
 }  // namespace sim
 
-#endif  // SOCKET_SIM_FLASH_HPP
+#endif  // SOCKET_SIM_PROG_HPP

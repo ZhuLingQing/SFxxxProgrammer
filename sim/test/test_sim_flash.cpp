@@ -18,8 +18,14 @@ using test_buf_t = std::array<uint8_t, kTestBufSize>;
     {                                                                                   \
         r = flash->Transfer(std::vector<uint8_t>(cmd, cmd + sizeof(cmd)), resp, false); \
         r |= flash->Transfer(num, resp);                                                \
+        std::cout << flash->getMessage();                                               \
     } while (0)
-#define TEST_COMMAND(cmd) r = flash->Transfer(std::vector<uint8_t>(cmd, cmd + sizeof(cmd)), resp)
+#define TEST_COMMAND(cmd)                                                        \
+    do                                                                           \
+    {                                                                            \
+        r = flash->Transfer(std::vector<uint8_t>(cmd, cmd + sizeof(cmd)), resp); \
+        std::cout << flash->getMessage();                                        \
+    } while (0)
 
 static void dump(const uint8_t* buf, size_t size, std::string prefix = "[DUMP] ")
 {
@@ -100,30 +106,36 @@ int main(int argc, char* argv[])
     uint64_t addr;
     test_buf_t wbuf, rbuf;
     std::vector<uint8_t> resp;
+    const char* flash_name = argv[1];
 
-    // const char* plog_level = getenv("PLOG_LEVEL");
-    // std::cout << "export PLOG_LEVEL=" << plog_level << " could adjust log level" << std::endl;
+    const char* db_path = getenv("FLASH_DB");
+    if (nullptr == db_path)
+    {
+        std::cerr << "Undefined FLASH_DB environment variable." << std::endl;
+        std::cout << "`source .bashrc` to export FLASH_DB environment variable." << std::endl;
+        return 1;
+    }
     // DP_LOG_INIT_WITH_CONSOLE(INFO, "./test.log", 30000, 3);
     // DP_LOG_INIT_CONSOLE_ONLY(static_cast<plog::Severity>(plog_level ? std::atoi(plog_level) : plog::info));
 
     std::cout << std::endl << "\t---- Test Start ----" << std::endl;
-    auto db = dp::FlashDatabase::getInstance(argv[1]);
+    auto db = dp::FlashDatabase::getInstance(db_path);
     if (!db.isLoaded())
     {
         std::cout << "Database not loaded" << std::endl;
         return 1;
     }
-    auto info = db.getFlashInfo(argv[2]);
+    auto info = db.getFlashInfo(flash_name);
     if (info == nullptr)
     {
-        std::cout << "Flash " << argv[2] << " not found" << std::endl;
+        std::cout << "Flash " << flash_name << " not found" << std::endl;
         return 1;
     }
     auto finfo = info->getInfo();
     auto flash = sim::SimFlashFactory(info);
     if (flash == nullptr)
     {
-        std::cout << "Flash " << argv[2] << " not factory" << std::endl;
+        std::cout << "Flash " << flash_name << " not factory" << std::endl;
         return 1;
     }
     flash->setUID(uid);
@@ -131,7 +143,7 @@ int main(int argc, char* argv[])
     flash->setClock(12);
     dump(uid.data(), uid.size(), "[UID]");
     {
-        std::cout << "\t>>>>  RDID <<<<" << std::endl;
+        std::cout << "\t>>>> RDID <<<<" << std::endl;
         TEST_COMMAND(rdid);
         std::cout << "RDID: " << to_hex_string(resp[1]) << to_hex_string(resp[2]) << to_hex_string(resp[3])
                   << ", return " << r << std::endl;
@@ -144,7 +156,7 @@ int main(int argc, char* argv[])
         std::cout << "FRD: " << (std::equal(resp.begin() + 5, resp.end(), uid.begin()) ? "OK" : "FAIL") << std::endl;
     }
     {
-        std::cout << "\t>>>>  WREN, WRDI, RDSR <<<<" << std::endl;
+        std::cout << "\t>>>> WREN, WRDI, RDSR <<<<" << std::endl;
         TEST_COMMAND(rdsr);
         std::cout << "RDSR: 0x" << to_hex_string(resp[1]) << ", return " << r << std::endl;
         TEST_COMMAND(wren);
@@ -163,7 +175,7 @@ int main(int argc, char* argv[])
         std::cout << "RDSR: 0x" << to_hex_string(resp[1]) << ", return " << r << std::endl;
     }
     {
-        std::cout << "\t>>>>  WP <<<<" << std::endl;
+        std::cout << "\t>>>> WP <<<<" << std::endl;
         flash->setWP(true);
         std::cout << "setWP: true" << std::endl;
         TEST_COMMAND(wren);
@@ -181,7 +193,7 @@ int main(int argc, char* argv[])
         std::cout << "RDSR: 0x" << to_hex_string(resp[1]) << ", return " << r << std::endl;
     }
     {
-        std::cout << "\t>>>>  CE <<<<" << std::endl;
+        std::cout << "\t>>>> CE <<<<" << std::endl;
         TEST_COMMAND(wren);
         TEST_COMMAND(ce);
         retry = 0;
@@ -197,7 +209,7 @@ int main(int argc, char* argv[])
         std::cout << "CE: RDSR: 0x" << to_hex_string(resp[1]) << ", return " << r << std::endl;
     }
     {
-        std::cout << "\t>>>>  Backdoor <<<<" << std::endl;
+        std::cout << "\t>>>> Backdoor <<<<" << std::endl;
         r = flash->BackdoorBlankCheck(0, finfo.ChipSizeInKByte * 1024LL);
         std::cout << "Backdoor::BlankCheck: return " << r << std::endl;
 
@@ -217,7 +229,7 @@ int main(int argc, char* argv[])
         std::cout << "Backdoor::BlankCheck: return " << r << std::endl;
     }
     {
-        std::cout << "\t>>>>  SE <<<<" << std::endl;
+        std::cout << "\t>>>> SE <<<<" << std::endl;
         addr = rnd.getAddress(finfo.ChipSizeInKByte * 1024LL - wbuf.size());
         r = flash->BackdoorWrite(addr, wbuf.data(), wbuf.size());
         addrConvert(se + 1, addr, finfo.AddrWidth);
@@ -239,7 +251,7 @@ int main(int argc, char* argv[])
         std::cout << "Backdoor::BlankCheck: return " << r << std::endl;
     }
     {
-        std::cout << "\t>>>>  PP, RD, FRD <<<<" << std::endl;
+        std::cout << "\t>>>> PP, RD, FRD <<<<" << std::endl;
         addr = rnd.getAddress(finfo.ChipSizeInKByte * 1024LL - wbuf.size()) & (~255LL);
         auto start = std::chrono::high_resolution_clock::now();
         addrConvert(pp + 1, addr, finfo.AddrWidth);

@@ -1,5 +1,5 @@
 #!/bin/bash
-CUR_DIR=$(cd $(dirname $0); pwd)
+CUR_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 ARCHIVES=$CUR_DIR/../archives
 PROJ_DIR=$(cd $CUR_DIR/..; pwd)
 SRC_DIR=$PROJ_DIR/umd/test/socket_protobuf

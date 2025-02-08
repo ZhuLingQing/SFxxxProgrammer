@@ -15,7 +15,7 @@ const long SimFlash::kPageProgramMs_ = CONFIG_PAGE_PROGRAM_MS;
 const long SimFlash::kSectorEraseMs_ = CONFIG_SECTOR_ERASE_MS;
 const long SimFlash::kChipEraseMs_ = CONFIG_CHIP_ERASE_MS;
 
-SimM25Pxx::SimM25Pxx(const dp::FlashInfo *info) : SimFlashMem<uint8_t, 0xFF, 256>(info)
+SimM25Pxx::SimM25Pxx(const struct dp::flash_info_t &info) : SimFlashMem<uint8_t, 0xFF, 256>(info)
 {
     per_byte_map_ = {
         {kCmdJedecId, &SimM25Pxx::HndReadIdentification},     {0x9E, &SimM25Pxx::HndReadIdentification},
@@ -62,9 +62,9 @@ bool SimM25Pxx::isWriteEnabled(uint32_t sector_index, uint32_t sector_num)
     auto protect_first = range->second.first;
     auto protect_last = range->second.second;
     if (sector_first > protect_last || sector_last < protect_first) return true;
-    addMessage("StatusRegister: @" + to_hex_string(status_reg_.get()));
-    addMessage("Protected: @" + std::to_string(protect_first) + " ~ " + std::to_string(protect_last) + ". Access: @" +
-               std::to_string(sector_first) + " ~ " + std::to_string(sector_last));
+    addMessage() << "StatusRegister: @" << to_hex_string(status_reg_.get()) << std::endl;
+    addMessage() << "Protected: @" << std::to_string(protect_first) << " ~ " << std::to_string(protect_last)
+                 << ". Access: @" << std::to_string(sector_first) << " ~ " << std::to_string(sector_last) << std::endl;
     return false;
 }
 
@@ -90,9 +90,9 @@ int SimM25Pxx::CsRisingHandle()
     // else if (per_byte_map_.find(cmd_cache_[0]) == per_byte_map_.end())
     else if (0 == per_byte_map_.count(cmd_cache_[0]))
     {
-        addMessage("CsRisingHandle: unimplemented cmd@" + to_hex_string(cmd_cache_[0]));
+        addMessage() << "CsRisingHandle: unimplemented cmd@" << to_hex_string(cmd_cache_[0]) << std::endl;
     }
-    SimFlash::Dump();
+    SimFlash::CsRisingHandle();
     return r;
 }
 
@@ -100,7 +100,7 @@ uint8_t SimM25Pxx::HndReadIdentification()
 {
     size_t offset = cmd_cache_.size() - 1;
     if (offset <= id_.size()) return id_[offset - 1];
-    addMessage("HndReadIdentification: offset@" + std::to_string(offset) + " is out of range");
+    addMessage() << "HndReadIdentification: offset@" << std::to_string(offset) << " is out of range" << std::endl;
     return getDefaultPattern();
 }
 
@@ -113,17 +113,17 @@ uint8_t SimM25Pxx::HndReadStatusRegister()
 uint8_t SimM25Pxx::HndRead(size_t dummy)
 {
     size_t offset = cmd_cache_.size() - 1;
-    auto addr_width = info_->getInfo().AddrWidth + dummy;
+    auto addr_width = info_.AddrWidth + dummy;
     if (offset < addr_width)
         return getDefaultPattern();
     else if (offset == addr_width)
     {
         AddressConvert();
-        page_mem_ = getPage(page_index_);
+        temp_page_ = getPage(page_index_);
     }
     else
     {
-        uint8_t data = page_mem_[page_offset_];
+        uint8_t data = temp_page_[page_offset_];
         page_offset_++;
         if (page_size_ == page_offset_)
         {
@@ -132,9 +132,9 @@ uint8_t SimM25Pxx::HndRead(size_t dummy)
             if (page_index_ * page_size_ == chip_size_)
             {
                 page_index_ = 0;
-                addMessage("HndReadData: wrap");
+                addMessage() << "HndReadData: wrap" << std::endl;
             }
-            page_mem_ = getPage(page_index_);
+            temp_page_ = getPage(page_index_);
         }
         return data;
     }
@@ -150,12 +150,12 @@ int SimM25Pxx::ExeWriteEnable()
     size_t offset = cmd_cache_.size() - 1;
     if (offset)
     {
-        addMessage("ExeWriteEnable: offset@" + std::to_string(offset) + " is out of range");
+        addMessage() << "ExeWriteEnable: offset@" << std::to_string(offset) << " is out of range" << std::endl;
         return -1;
     }
     else if (isStatusWriteDisabled())
     {
-        addMessage("ExeWriteEnable: Not Write Enabled");
+        addMessage() << "ExeWriteEnable: Not Write Enabled" << std::endl;
         return 0;
     }
     else
@@ -170,12 +170,12 @@ int SimM25Pxx::ExeWriteDisable()
     size_t offset = cmd_cache_.size() - 1;
     if (offset)
     {
-        addMessage("ExeWriteDisable: offset@" + std::to_string(offset) + " is out of range");
+        addMessage() << "ExeWriteDisable: offset@" << std::to_string(offset) << " is out of range" << std::endl;
         return -1;
     }
     else if (isStatusWriteDisabled())
     {
-        addMessage("ExeWriteEnable: Not Write Enabled");
+        addMessage() << "ExeWriteEnable: Not Write Enabled" << std::endl;
         return 0;
     }
     else
@@ -190,12 +190,12 @@ int SimM25Pxx::ExeWriteStatusRegister()
     size_t offset = cmd_cache_.size() - 1;
     if (offset != 1)
     {
-        addMessage("ExeWriteDisable: offset@" + std::to_string(offset) + " is out of range");
+        addMessage() << "ExeWriteDisable: offset@" << std::to_string(offset) << " is out of range" << std::endl;
         return -1;
     }
     else if (isStatusWriteDisabled())
     {
-        addMessage("ExeWriteEnable: Not Write Enabled");
+        addMessage() << "ExeWriteEnable: Not Write Enabled" << std::endl;
         return 0;
     }
     else
@@ -208,30 +208,30 @@ int SimM25Pxx::ExeWriteStatusRegister()
 int SimM25Pxx::ExePageProgram()
 {
     size_t offset = cmd_cache_.size() - 1;
-    auto addr_width = info_->getInfo().AddrWidth;
+    auto addr_width = info_.AddrWidth;
     if (offset <= addr_width)
     {
-        addMessage("ExePageProgram: offset@" + std::to_string(offset) + " too short");
+        addMessage() << "ExePageProgram: offset@" << std::to_string(offset) << " too short" << std::endl;
         return 0;
     }
     AddressConvert();
     if (page_offset_ + cmd_cache_.size() - 1 - addr_width > page_size_)
     {
-        addMessage("ExePageProgram: offset@" + std::to_string(offset) + " is out of range");
+        addMessage() << "ExePageProgram: offset@" << std::to_string(offset) << " is out of range" << std::endl;
         return -1;
     }
     else if (!isWriteEnabled(address_ / sector_size_))
     {
-        addMessage("ExePageProgram: Not Write Enabled");
+        addMessage() << "ExePageProgram: Not Write Enabled" << std::endl;
         return 0;
     }
     else if (isWriteInProgress())
     {
-        addMessage("ExePageProgram: isWriteInProgress");
+        addMessage() << "ExePageProgram: isWriteInProgress" << std::endl;
         return -1;
     }
-    page_mem_ = getPage(page_index_);
-    std::copy(cmd_cache_.begin() + 1 + addr_width, cmd_cache_.end(), page_mem_.begin() + page_offset_);
+    temp_page_ = getPage(page_index_);
+    std::copy(cmd_cache_.begin() + 1 + addr_width, cmd_cache_.end(), temp_page_.begin() + page_offset_);
     status_reg_.set(kStatusWIP);
     exe_thread_ = std::thread(&SimM25Pxx::asyncPageProgram, this, page_index_);
     return 0;
@@ -240,21 +240,21 @@ int SimM25Pxx::ExePageProgram()
 int SimM25Pxx::ExeSectorErase()
 {
     size_t offset = cmd_cache_.size() - 1;
-    auto addr_width = info_->getInfo().AddrWidth;
+    auto addr_width = info_.AddrWidth;
     if (offset != addr_width)
     {
-        addMessage("ExeSectorErase: offset@" + std::to_string(offset) + " too short/long");
+        addMessage() << "ExeSectorErase: offset@" << std::to_string(offset) << " too short/long" << std::endl;
         return 0;
     }
     AddressConvert();
     if (!isWriteEnabled(address_ / sector_size_))
     {
-        addMessage("ExeSectorErase: Not Write Enabled");
+        addMessage() << "ExeSectorErase: Not Write Enabled" << std::endl;
         return 0;
     }
     else if (isWriteInProgress())
     {
-        addMessage("ExeSectorErase: isWriteInProgress");
+        addMessage() << "ExeSectorErase: isWriteInProgress" << std::endl;
         return -1;
     }
     status_reg_.set(kStatusWIP);
@@ -267,17 +267,17 @@ int SimM25Pxx::ExeChipErase()
     size_t offset = cmd_cache_.size() - 1;
     if (offset)
     {
-        addMessage("ExeChipErase: offset@" + std::to_string(offset) + " too short/long");
+        addMessage() << "ExeChipErase: offset@" << std::to_string(offset) << " too short/long" << std::endl;
         return 0;
     }
     if (!isWriteEnabled(0, chip_size_ / sector_size_))
     {
-        addMessage("ExeChipErase: Not Write Enabled");
+        addMessage() << "ExeChipErase: Not Write Enabled" << std::endl;
         return 0;
     }
     else if (isWriteInProgress())
     {
-        addMessage("ExeChipErase: isWriteInProgress");
+        addMessage() << "ExeChipErase: isWriteInProgress" << std::endl;
         return -1;
     }
     status_reg_.set(kStatusWIP);
@@ -290,12 +290,12 @@ int SimM25Pxx::ExeDeepPowerDown()
     size_t offset = cmd_cache_.size() - 1;
     if (offset)
     {
-        addMessage("ExeDeepPowerDown: offset@" + std::to_string(offset) + " too short/long");
+        addMessage() << "ExeDeepPowerDown: offset@" << std::to_string(offset) << " too short/long" << std::endl;
         return 0;
     }
     if (isWriteInProgress())
     {
-        addMessage("ExeDeepPowerDown: isWriteInProgress");
+        addMessage() << "ExeDeepPowerDown: isWriteInProgress" << std::endl;
         return -1;
     }
     state_ = kDeepPowerDown;
@@ -307,7 +307,7 @@ int SimM25Pxx::ExeReleaseDeepPowerDown()
     size_t offset = cmd_cache_.size() - 1;
     if (offset)
     {
-        addMessage("ExeReleaseDeepPowerDown: offset@" + std::to_string(offset) + " too short/long");
+        addMessage() << "ExeReleaseDeepPowerDown: offset@" << std::to_string(offset) << " too short/long" << std::endl;
         return 0;
     }
     state_ = kReady;
@@ -340,13 +340,14 @@ void SimM25Pxx::asyncSectorErase(uint32_t sector_index)
 void SimM25Pxx::asyncPageProgram(uint32_t page_index)
 {
     std::this_thread::sleep_for(std::chrono::milliseconds(kPageProgramMs_));
-    if (!isBlankPage(page_mem_)) PageDataReplace(page_index, page_mem_);
+    if (!isBlankPage(temp_page_)) PageDataReplace(page_index, temp_page_);
     status_reg_.clear(kStatusWIP | kStatusWEL);
 }
 
 SimFlash *SimFlashFactory(const dp::FlashInfo *info)
 {
-    if (info->getClass() == dp::kClass_M25Pxx) return new SimM25Pxx(info);
+    assert(info);
+    if (info->getClass() == dp::kClass_M25Pxx) return new SimM25Pxx(info->getInfo());
     std::cerr << "SimFlashFactory::" << info->getName() << "::Unsupported class@" << info->getInfo().Class << std::endl;
     return nullptr;
 }

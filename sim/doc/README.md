@@ -16,7 +16,7 @@ without cmake:
 status register read/write  
 -  shared_mutex protected for multi-thread access
 
-### SimFlashMem: 
+### SimFlash: 
 root class. pure virtual class.  
 - Flash Specific operations:
     - `setUID()`
@@ -41,7 +41,6 @@ root class. pure virtual class.
     - `addMessage()`
     - `clearMessage()`
     - `getMessage()`
-    - `enableDump()`
     - `Dump()`
     - `getPageIndex()`
     - `getSectorIndex()`
@@ -63,7 +62,7 @@ data structure design according to HW-spec. and get higher performance.
 foud-tier architecture: chip -> sector -> page -> byte.  
 ChipErase: `mem_.clear()`  
 SectorErase: `mem_.erase(sector_index)`  
-PageProgram: `mem_[sector_index][page_index] = page_mem__t(page_data)`  
+PageProgram: `mem_[sector_index][page_index] = page_mem_t(page_data)`  
 RandomProgram: `mem_[sector_index][page_index][byte_index] = byte_data`  
 
 ### implemented flash classes:

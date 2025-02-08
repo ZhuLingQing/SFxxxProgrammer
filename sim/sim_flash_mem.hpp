@@ -3,9 +3,11 @@
 
 #include <array>
 #include <charconv>
+#include <chrono>
 #include <cstdint>
 #include <cstdlib>
 #include <cstring>
+#include <iomanip>
 #include <map>
 #include <optional>
 #include <shared_mutex>
@@ -79,14 +81,11 @@ class SimFlash
         kReady,
         kError,
     };
-    SimFlash(const dp::FlashInfo *info) : info_(info), enable_dump_(false)
-    {
-        assert(info_);
-        Reset();
-    }
+    SimFlash(const struct dp::flash_info_t &info) : info_(info) { Reset(); }
     virtual void Reset()
     {
         state_ = kPowerOff;
+        cs_high_ = true;
         power_vcc_ = 0;
         power_vpp_ = 0;
         clock_mhz_ = 12;
@@ -96,17 +95,14 @@ class SimFlash
         cmd_cache_.clear();
         rsp_cache_.clear();
         if (exe_thread_.joinable()) exe_thread_.join();
-        if (info_)
+
+        chip_size_ = info_.ChipSizeInKByte * 1024LL;
+        sector_size_ = info_.SectorSizeInByte;
+        page_size_ = info_.PageSizeInByte;
+        if (info_.IDNumber)
         {
-            auto info = info_->getInfo();
-            chip_size_ = info_->getInfo().ChipSizeInKByte * 1024LL;
-            sector_size_ = info_->getInfo().SectorSizeInByte;
-            page_size_ = info_->getInfo().PageSizeInByte;
-            if (info.IDNumber)
-            {
-                for (int shift = info.IDNumber - 1; shift >= 0; shift--)
-                    id_.push_back(static_cast<uint8_t>(info.JedecDeviceID >> (8 * shift)));
-            }
+            for (int shift = info_.IDNumber - 1; shift >= 0; shift--)
+                id_.push_back(static_cast<uint8_t>(info_.JedecDeviceID >> (8 * shift)));
         }
     }
     virtual int BackdoorWrite(uint64_t address, const uint8_t *data, size_t size) = 0;
@@ -116,36 +112,26 @@ class SimFlash
 
     int Transfer(size_t dummy, std::vector<uint8_t> &resp, bool cs_high = true)
     {
+        if (HardwareCheck()) return -1;
+        if (cs_high_) CsFallingHandle();
         resp.clear();
         for (size_t i = 0; i < dummy; i++)
         {
             resp.push_back(Transceive(getDefaultPattern()));
         }
-        if (cs_high)
-        {
-            return CsRisingEdge();
-        }
-        else
-        {
-            if (HardwareCheck()) return -1;
-        }
+        if (cs_high) return CsRisingHandle();
         return 0;
     }
     int Transfer(const std::vector<uint8_t> &payload, std::vector<uint8_t> &resp, bool cs_high = true)
     {
+        if (HardwareCheck()) return -1;
+        if (cs_high_) CsFallingHandle();
         resp.clear();
         for (auto x : payload)
         {
             resp.push_back(Transceive(x));
         }
-        if (cs_high)
-        {
-            return CsRisingEdge();
-        }
-        else
-        {
-            if (HardwareCheck()) return -1;
-        }
+        if (cs_high) return CsRisingHandle();
         return 0;
     }
     void setVcc(int vcc)
@@ -164,8 +150,8 @@ class SimFlash
     }
     void setUID(const std::vector<uint8_t> &uid)
     {
-        id_.erase(id_.begin() + info_->getInfo().IDNumber, id_.end());
-        id_.reserve(info_->getInfo().IDNumber + 1 + uid.size());
+        id_.erase(id_.begin() + info_.IDNumber, id_.end());
+        id_.reserve(info_.IDNumber + 1 + uid.size());
         id_.push_back(static_cast<uint8_t>(uid.size()));
         id_.insert(id_.end(), uid.begin(), uid.end());
     }
@@ -173,7 +159,19 @@ class SimFlash
     void setVpp(int vpp) { power_vpp_ = vpp; }
     void setClock(int clock) { clock_mhz_ = clock; }
     state_e getState() const { return state_; }
-    const dp::FlashInfo *getInfo() const { return info_; }
+    const struct dp::flash_info_t &getInfo() const { return info_; }
+
+    void Dump(std::ostream &os = std::cout)
+    {
+        os << "SimFlashMem(0x" << to_hex_string(cmd_cache_[0]) << "):mosi/miso";
+        for (size_t i = 0; i < cmd_cache_.size(); ++i)
+        {
+            if (i % 8 == 0) os << std::endl << "\t";
+            os << to_hex_string(cmd_cache_[i]) << "/" << to_hex_string(rsp_cache_[i]) << " ";
+        }
+        os << std::endl;
+    }
+    std::string getMessage() const { return message_.str(); }
 
    private:
     uint8_t Transceive(uint8_t data)
@@ -184,18 +182,6 @@ class SimFlash
         rsp_cache_.push_back(rdata);
         return rdata;
     }
-    int CsRisingEdge()
-    {
-        CsRisingHandle();
-        cmd_cache_.clear();
-        rsp_cache_.clear();
-        if (getMessage().size())
-        {
-            std::cerr << getMessage();
-            clearMessage();
-        }
-        return 0;
-    }
 
    protected:
     virtual bool isStatusWriteDisabled() { return false; }
@@ -205,32 +191,39 @@ class SimFlash
     virtual uint8_t getBlankPattern() const { return 0xFF; }
     virtual uint8_t getReleaseDeepPowerDownCmd() const { return kCmdReleasePowerDown; }
     virtual uint8_t PerByteHandle() = 0;
-    virtual int CsRisingHandle() = 0;
+    virtual void CsFallingHandle()
+    {
+        cmd_cache_.clear();
+        rsp_cache_.clear();
+        clearMessage();
+        cs_high_ = false;
+    }
+    virtual int CsRisingHandle()
+    {
+        cs_high_ = true;
+        return 0;
+    }
+    // void addMessage(const std::string &s) { message_ << "[SIM] " + s + "\n"; }
+    std::ostringstream &addMessage()
+    {
+        message_ << "[SIM:"
+                 //  << std::chrono::duration_cast<std::chrono::microseconds>(
+                 //         std::chrono::high_resolution_clock::now().time_since_epoch())
+                 //         .count()
+                 << (cmd_cache_.size() ? to_hex_string(cmd_cache_[0]) : "--") << "]";
+        return message_;
+    }
+    void clearMessage() { message_.str(""); }
     virtual void asyncChipErase() {}
     virtual void asyncSectorErase(uint32_t sector_index) {}
     virtual void asyncPageProgram(uint32_t page_index) {}
 
-    void addMessage(const std::string s) { message_ += "[SIM] " + s + "\n"; }
-    void clearMessage() { message_.clear(); }
-    const std::string &getMessage() const { return message_; }
-    void enableDump(bool enable) { enable_dump_ = enable; }
-    void Dump()
-    {
-        if (!enable_dump_) return;
-        std::cout << "SimFlashMem(0x" << to_hex_string(cmd_cache_[0]) << "):mosi/miso";
-        for (size_t i = 0; i < cmd_cache_.size(); ++i)
-        {
-            if (i % 8 == 0) std::cout << std::endl << "\t";
-            std::cout << to_hex_string(cmd_cache_[i]) << "/" << to_hex_string(rsp_cache_[i]) << " ";
-        }
-        std::cout << std::endl;
-    }
     uint32_t getPageIndex(uint64_t address) const { return address / page_size_; }
     uint32_t getSectorIndex(uint64_t address) const { return address / sector_size_; }
     void AddressConvert()
     {
         address_ = 0;
-        for (size_t i = 0; i < info_->getInfo().AddrWidth; ++i)
+        for (size_t i = 0; i < info_.AddrWidth; ++i)
         {
             address_ <<= 8;
             address_ |= cmd_cache_[i + 1];
@@ -253,21 +246,21 @@ class SimFlash
             std::cerr << "SimFlashMem::HardwareCheck: size@" << address + size << std::endl;
             return -1;
         }
-        if (power_vcc_ != info_->getInfo().Voltage)
+        if (power_vcc_ != info_.Voltage)
         {
             std::cerr << "SimFlashMem::HardwareCheck: vcc@" << power_vcc_ << std::endl;
             return -1;
         }
-        if (clock_mhz_ == 0 || clock_mhz_ > info_->getInfo().Clock)
+        if (clock_mhz_ == 0 || clock_mhz_ > info_.Clock)
         {
             std::cerr << "SimFlashMem::HardwareCheck: clock@" << clock_mhz_ << std::endl;
             return -1;
         }
         return 0;
     }
-    const dp::FlashInfo *info_;
-    bool enable_dump_;
+    const struct dp::flash_info_t &info_;
     state_e state_;
+    bool cs_high_;
     int power_vcc_;
     int power_vpp_;
     int clock_mhz_;
@@ -280,7 +273,7 @@ class SimFlash
     std::vector<uint8_t> id_;
     std::vector<uint8_t> cmd_cache_;
     std::vector<uint8_t> rsp_cache_;
-    std::string message_;
+    std::ostringstream message_;
 
     mutable std::thread exe_thread_;
     static const long kPageProgramMs_;
@@ -295,7 +288,7 @@ class SimFlashMem : public SimFlash
     using page_mem_t = std::array<uint8_t, kPageSize>;
     using sector_mem_t = std::map<uint32_t, page_mem_t>;
     using chip_mem_t = std::map<uint32_t, sector_mem_t>;
-    SimFlashMem(const dp::FlashInfo *info) : SimFlash(info), blank_page_mem_({kBlankValue}) {}
+    SimFlashMem(const struct dp::flash_info_t &info) : SimFlash(info), blank_page_({kBlankValue}) {}
     void Reset() override
     {
         SimFlash::Reset();
@@ -376,10 +369,10 @@ class SimFlashMem : public SimFlash
         auto sector_index = page_index / (sector_size_ / page_size_);
         // check sector exist
         auto sector = mem_.find(sector_index);
-        if (sector == mem_.end()) return blank_page_mem_;
+        if (sector == mem_.end()) return blank_page_;
         // check page exist
         auto page = sector->second.find(page_index);
-        if (page == sector->second.end()) return blank_page_mem_;
+        if (page == sector->second.end()) return blank_page_;
         return page->second;
     }
     std::optional<page_mem_t> TryGetPage(uint32_t page_index)
@@ -398,7 +391,7 @@ class SimFlashMem : public SimFlash
     bool isBlankPage(page_mem_t &page_mem)
     {
         // return std::all_of(page_mem.begin(), page_mem.end(), [](uint8_t x) { return x == 0xFF; });
-        return page_mem == blank_page_mem_;
+        return page_mem == blank_page_;
     }
     void PageDataReplace(uint32_t page_index, page_mem_t &page_mem)
     {
@@ -421,14 +414,14 @@ class SimFlashMem : public SimFlash
     }
     SimStatusRegister<SR> status_reg_;
     chip_mem_t mem_;
-    page_mem_t page_mem_;
-    const page_mem_t blank_page_mem_;
+    page_mem_t temp_page_;
+    const page_mem_t blank_page_;
 };
 
 class SimM25Pxx : public SimFlashMem<uint8_t, 0xFF, 256>
 {
    public:
-    SimM25Pxx(const dp::FlashInfo *info);
+    SimM25Pxx(const struct dp::flash_info_t &info);
 
     void setWP(bool wp) override { wp ? status_reg_.set(kStatusSRWD) : status_reg_.clear(kStatusSRWD); }
 

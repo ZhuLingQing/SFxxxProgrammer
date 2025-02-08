@@ -1,5 +1,5 @@
 #!/bin/bash
-CUR_DIR=$(cd $(dirname $0); pwd)
+CUR_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 ARCHIVES=$CUR_DIR/../archives
 PROJ_DIR=$CUR_DIR/..
 CASE_NAME=test_programmer_detect

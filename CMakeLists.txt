@@ -28,7 +28,7 @@ set(CMAKE_CXX_EXTENSIONS False)
 
 if (${PROJECT} STREQUAL "sim")
     enable_testing()
-    
+
     message(WARNING "build sim")
     set(PROJ_NAME test_sim_flash )
 
@@ -53,7 +53,7 @@ if (${PROJECT} STREQUAL "sim")
         pthread
     )
 
-    add_test( NAME ${PROJ_NAME} COMMAND ${PROJ_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/archives/ChipInfoDb_opt.json M25P16)
+    add_test( NAME ${PROJ_NAME} COMMAND ${PROJ_NAME} M25P16)
 
     # install( TARGETS ${LIB_NAME} )
 else()

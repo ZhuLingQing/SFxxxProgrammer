@@ -1,4 +1,4 @@
-#include "socket_sim_flash.hpp"
+#include "socket_sim_prog.hpp"
 
 #include <arpa/inet.h>
 #include <sys/socket.h>
@@ -15,21 +15,21 @@
 
 namespace sim
 {
-// SocketSimFlash
+// SocketSimProg
 
-#define MAKE_CTRL(name)                           \
-    {                                             \
-        kReqEp##name, &SocketSimFlash::Ctrl##name \
+#define MAKE_CTRL(name)                          \
+    {                                            \
+        kReqEp##name, &SocketSimProg::Ctrl##name \
     }
-/* static */ std::map<uint8_t, int (SocketSimFlash::*)(uint64_t ctrl)> SocketSimFlash::endpoint_ctrl_map_ = {
+/* static */ std::map<uint8_t, int (SocketSimProg::*)(uint64_t ctrl)> SocketSimProg::endpoint_ctrl_map_ = {
     MAKE_CTRL(Transceive),       MAKE_CTRL(Polling),     MAKE_CTRL(SetPowerVpp), MAKE_CTRL(SetTargetFlash),
     MAKE_CTRL(ReadOnBoardFlash), MAKE_CTRL(WriteEEPROM), MAKE_CTRL(SetIO),       MAKE_CTRL(GetProgInfo),
     MAKE_CTRL(SetPowerVcc),      MAKE_CTRL(StandAlone),  MAKE_CTRL(SetCs),       MAKE_CTRL(SetIoMode),
 };
 
-SocketSimFlash::SocketSimFlash(int port) : port_(port), skt_fd_(-1) {}
+SocketSimProg::SocketSimProg(int port) : port_(port), skt_fd_(-1) {}
 
-int SocketSimFlash::run()
+int SocketSimProg::run()
 {
     int rc;
     proto_hal::HalSktCtrlPacket pkt;
@@ -57,18 +57,18 @@ int SocketSimFlash::run()
         }
         payload_.clear();
     }
-    (rc ? std::cerr : std::cout) << "SocketSimFlash exit with code " << rc << std::endl;
+    (rc ? std::cerr : std::cout) << "SocketSimProg exit with code " << rc << std::endl;
     return rc;
 }
 
-int SocketSimFlash::ProtoProcess(proto_hal::PacketType type, uint64_t ctrl_word)
+int SocketSimProg::ProtoProcess(proto_hal::PacketType type, uint64_t ctrl_word)
 {
     int r;
     switch (type)
     {
         case proto_hal::kCtrlOut:
         case proto_hal::kCtrlIn:
-            std::map<uint8_t, int (sim::SocketSimFlash::*)(uint64_t ctrl)>::iterator fp;
+            std::map<uint8_t, int (sim::SocketSimProg::*)(uint64_t ctrl)>::iterator fp;
             dp::hal_ctrl ctrl(ctrl_word);
             if ((ctrl.request_type() & 0x7F) == dp::ProgrammerHal::kVendorFuncOther)
                 fp = other_ctrl_map_.find(ctrl.request());
@@ -104,7 +104,7 @@ int SocketSimFlash::ProtoProcess(proto_hal::PacketType type, uint64_t ctrl_word)
     return 0;
 }
 
-int SocketSimFlash::create()
+int SocketSimProg::create()
 {
     int serverSocket = socket(AF_INET, SOCK_STREAM, 0);
     if (serverSocket == -1)
@@ -138,7 +138,7 @@ int SocketSimFlash::create()
     return serverSocket;
 }
 
-int SocketSimFlash::wait()
+int SocketSimProg::wait()
 {
     // 接受客户端连接
     sockaddr_in clientAddress{};
@@ -156,7 +156,7 @@ int SocketSimFlash::wait()
     return clientSocket;
 }
 
-int SocketSimFlash::ProtoSendCtrl(proto_hal::HalSktCtrlPacket &pkt)
+int SocketSimProg::ProtoSendCtrl(proto_hal::HalSktCtrlPacket &pkt)
 {
     std::string serializedData;
     pkt.SerializeToString(&serializedData);
@@ -174,7 +174,7 @@ int SocketSimFlash::ProtoSendCtrl(proto_hal::HalSktCtrlPacket &pkt)
     return 0;
 }
 
-int SocketSimFlash::ProtoReadCtrl(proto_hal::HalSktCtrlPacket &pkt)
+int SocketSimProg::ProtoReadCtrl(proto_hal::HalSktCtrlPacket &pkt)
 {
     uint32_t dataLength;
     if (recv(cli_fd_, &dataLength, sizeof(dataLength), 0) != sizeof(dataLength))
@@ -199,7 +199,7 @@ int SocketSimFlash::ProtoReadCtrl(proto_hal::HalSktCtrlPacket &pkt)
     return 0;
 }
 
-uint32_t SocketSimFlash::ProtoSendData(void *buf, uint32_t size)
+uint32_t SocketSimProg::ProtoSendData(void *buf, uint32_t size)
 {
     uint32_t naccess = 0, dataLength;
     uint8_t *p = reinterpret_cast<uint8_t *>(buf);
@@ -229,7 +229,7 @@ uint32_t SocketSimFlash::ProtoSendData(void *buf, uint32_t size)
     return naccess;
 }
 
-uint32_t SocketSimFlash::ProtoReadData(void *buf, uint32_t size)
+uint32_t SocketSimProg::ProtoReadData(void *buf, uint32_t size)
 {
     uint32_t naccess = 0, dataLength;
     uint8_t *p = reinterpret_cast<uint8_t *>(buf);
@@ -263,18 +263,18 @@ uint32_t SocketSimFlash::ProtoReadData(void *buf, uint32_t size)
     return naccess;
 }
 
-// int SocketSimFlash::CtrlXXX(uint64_t ctrl_word)
-int SocketSimFlash::CtrlTransceive(uint64_t ctrl_word) { return 0; }
-int SocketSimFlash::CtrlPolling(uint64_t ctrl_word) { return 0; }
-int SocketSimFlash::CtrlSetPowerVpp(uint64_t ctrl_word) { return 0; }
-int SocketSimFlash::CtrlSetTargetFlash(uint64_t ctrl_word) { return 0; }
-int SocketSimFlash::CtrlReadOnBoardFlash(uint64_t ctrl_word) { return 0; }
-int SocketSimFlash::CtrlWriteEEPROM(uint64_t ctrl_word) { return 0; }
-int SocketSimFlash::CtrlSetIO(uint64_t ctrl_word) { return 0; }
-int SocketSimFlash::CtrlGetProgInfo(uint64_t ctrl_word) { return 0; }
-int SocketSimFlash::CtrlSetPowerVcc(uint64_t ctrl_word) { return 0; }
-int SocketSimFlash::CtrlStandAlone(uint64_t ctrl_word) { return 0; }
-int SocketSimFlash::CtrlSetCs(uint64_t ctrl_word) { return 0; }
-int SocketSimFlash::CtrlSetIoMode(uint64_t ctrl_word) { return 0; }
+// int SocketSimProg::CtrlXXX(uint64_t ctrl_word)
+int SocketSimProg::CtrlTransceive(uint64_t ctrl_word) { return 0; }
+int SocketSimProg::CtrlPolling(uint64_t ctrl_word) { return 0; }
+int SocketSimProg::CtrlSetPowerVpp(uint64_t ctrl_word) { return 0; }
+int SocketSimProg::CtrlSetTargetFlash(uint64_t ctrl_word) { return 0; }
+int SocketSimProg::CtrlReadOnBoardFlash(uint64_t ctrl_word) { return 0; }
+int SocketSimProg::CtrlWriteEEPROM(uint64_t ctrl_word) { return 0; }
+int SocketSimProg::CtrlSetIO(uint64_t ctrl_word) { return 0; }
+int SocketSimProg::CtrlGetProgInfo(uint64_t ctrl_word) { return 0; }
+int SocketSimProg::CtrlSetPowerVcc(uint64_t ctrl_word) { return 0; }
+int SocketSimProg::CtrlStandAlone(uint64_t ctrl_word) { return 0; }
+int SocketSimProg::CtrlSetCs(uint64_t ctrl_word) { return 0; }
+int SocketSimProg::CtrlSetIoMode(uint64_t ctrl_word) { return 0; }
 
 }  // namespace sim
